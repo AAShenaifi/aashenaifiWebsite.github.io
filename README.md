@@ -1,3 +1,5 @@
+<p align="center"><img src="logo-anim.svg" width="180" alt="Abdullah Alshenaifi logo"/></p>
+
 # Abdullah Alshenaifi — Portfolio Website
 
 Personal portfolio for Abdullah Alshenaifi, Electronics Engineer.  
@@ -60,3 +62,4 @@ All data in `content.json` is public portfolio information; it is safe in a publ
 
 ```bash
 python -m http.server 5500
+```
