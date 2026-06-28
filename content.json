@@ -1,0 +1,56 @@
+{
+  "_comment": "Edited by dashboard.html. The website (index.html) loads this at runtime. Safe to commit to the PUBLIC website repo — everything here is meant to be public.",
+  "formspree": "",
+  "contact": {
+    "email": "abdullah@aashenaifi.com",
+    "phone": "+966554337765",
+    "phoneDisplay": "+966 55 433 7765"
+  },
+  "cv": {
+    "viewEn": "https://drive.google.com/file/d/1cZEHZxhMUXIjrr1uLzr6WmE1njrH8laO/view",
+    "viewAr": "https://drive.google.com/file/d/16Vvo1pywdQGr30anaZKNyo-XwunGXnWg/view",
+    "downloadEn": "CV-Abdullah-Alshenaifi-EN.pdf",
+    "downloadAr": "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6987808e9eda95172160f684/aaf781e99_AbdullahAlshenaifiElectronicsEngineerAr.pdf"
+  },
+  "sections": { "about": true, "projects": true, "tools": true, "services": true, "cv": true, "contact": true },
+  "experience": [
+    { "en": "Alamat Robotics", "ar": "علامات للروبوتات", "roleEn": "Co-Owner · Apr 2019 – Present", "roleAr": "شريك مؤسس · أبريل 2019 – الآن", "url": "https://linktr.ee/alamat.robotics" },
+    { "en": "Princess Nourah bint Abdulrahman University", "ar": "جامعة الأميرة نورة بنت عبدالرحمن", "roleEn": "Lecturer · Jan 2025 – Jun 2026", "roleAr": "محاضر · يناير 2025 – يونيو 2026", "url": "https://pnu.edu.sa" },
+    { "en": "The National Company for Glass Industries", "ar": "الشركة الوطنية لصناعة الزجاج (زجاج)", "roleEn": "Electronics Engineer · Dec 2024 – Dec 2025", "roleAr": "مهندس إلكترونيات · ديسمبر 2024 – ديسمبر 2025", "url": null },
+    { "en": "Tuwaiq Academy", "ar": "أكاديمية طويق", "roleEn": "Instructor · Jul 2024 – Aug 2024", "roleAr": "مدرب · يوليو 2024 – أغسطس 2024", "url": "https://tuwaiq.edu.sa" }
+  ],
+  "skills": [
+    { "en": "Soldering SMT & THT", "ar": "لحام SMD و THT" },
+    { "en": "3D Modeling & Printing", "ar": "تصميم وطباعة ثلاثية الأبعاد" },
+    { "en": "PLC Programming", "ar": "برمجة الحاكمات (PLC)" },
+    { "en": "Arduino", "ar": "الأردوينو" },
+    { "en": "Proteus", "ar": "Proteus" },
+    { "en": "MicroC", "ar": "MicroC" },
+    { "en": "C++", "ar": "C++" },
+    { "en": "IoT / MQTT", "ar": "إنترنت الأشياء / MQTT" },
+    { "en": "PCB Design", "ar": "تصميم الدوائر المطبوعة" },
+    { "en": "Microsoft Office", "ar": "برامج الأوفيس" }
+  ],
+  "projects": [
+    { "titleEn": "IoT Smart Parking System", "titleAr": "نظام مواقف ذكية (IoT)", "descEn": "ESP32-based parking management integrated with Blynk IoT for real-time occupancy monitoring and reservation control.", "descAr": "نظام إدارة مواقف يعتمد على ESP32 مدمج مع Blynk لمراقبة الإشغال والحجز في الوقت الفعلي.", "date": "Nov 2024", "tags": ["ESP32", "Blynk", "IoT", "Sensors"], "url": null },
+    { "titleEn": "Smart Safety Helmet", "titleAr": "خوذة سلامة ذكية", "descEn": "ESP32 wearable with GPS tracking, temperature sensing, fall detection and Telegram alert notifications.", "descAr": "جهاز يُلبَس يعتمد على ESP32 مع تتبع GPS واستشعار الحرارة وكشف السقوط وتنبيهات عبر تيليجرام.", "date": "Apr 2024", "tags": ["ESP32", "GPS", "Fall Detection", "Telegram"], "url": null },
+    { "titleEn": "IoT Water Monitoring — Graduation Project", "titleAr": "مراقبة المياه (IoT) — مشروع التخرج", "descEn": "Apartment-level water metering with live dashboards and SMS alerts. Electronics design, embedded programming and testing.", "descAr": "قياس استهلاك المياه على مستوى الشقق مع لوحات حية وتنبيهات SMS. تصميم إلكتروني وبرمجة مدمجة واختبار.", "date": "Mar 2023", "tags": ["IoT", "Dashboards", "SMS", "Embedded"], "url": "https://linktr.ee/smartflows" },
+    { "titleEn": "Custom Robotics Mainboard PCB", "titleAr": "لوحة تحكم روبوت مخصصة (PCB)", "descEn": "Custom robotics mainboard with full schematic and PCB layout, hardware integration and documentation.", "descAr": "لوحة تحكم روبوت مخصصة بمخطط كامل وتصميم PCB، وتكامل عتادي وتوثيق.", "date": "Aug 2021", "tags": ["PCB Design", "Schematic", "Robotics", "Hardware"], "url": "https://github.com/AAShenaifi/Robots_MainboardPCB" }
+  ],
+  "tools": [
+    { "titleEn": "LCD Simulator", "titleAr": "محاكي شاشات LCD", "descEn": "Simulate character-LCD output and generate the matching microcontroller code.", "descAr": "محاكاة شاشات LCD النصية وتوليد كود المتحكم المطابق.", "url": "https://lcd-simulatorcode.netlify.app/", "tags": ["Embedded", "Codegen"], "badge": "wip" },
+    { "titleEn": "Chroma — Color Converter", "titleAr": "كروما — محوّل الألوان", "descEn": "Convert and explore colors across HEX, RGB, HSL and more, with handy palettes.", "descAr": "تحويل واستكشاف الألوان بين HEX و RGB و HSL والمزيد مع لوحات جاهزة.", "url": "https://chroma-color-converter.netlify.app", "tags": ["Design", "Utility"], "badge": "demo" },
+    { "titleEn": "HTML → PDF Converter", "titleAr": "محوّل HTML إلى PDF", "descEn": "Turn HTML content into clean, downloadable PDF documents in the browser.", "descAr": "تحويل محتوى HTML إلى ملفات PDF نظيفة قابلة للتحميل من المتصفح.", "url": "https://htmltopdfconv.netlify.app/", "tags": ["Document", "Export"], "badge": "demo" },
+    { "titleEn": "Font Preview Studio", "titleAr": "استوديو معاينة الخطوط", "descEn": "Preview, compare and audition typefaces with live custom text and styling.", "descAr": "معاينة ومقارنة الخطوط مع نص مخصص حي وتنسيقات مباشرة.", "url": "https://font-preview-studio.netlify.app/", "tags": ["Typography", "Design"], "badge": "wip" }
+  ],
+  "socials": [
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/AAShenaifi", "color": "#0a84ff", "stroke": true, "svg": "<path d=\"M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z\"/><rect x=\"2\" y=\"9\" width=\"4\" height=\"12\"/><circle cx=\"4\" cy=\"4\" r=\"2\"/>" },
+    { "label": "GitHub", "url": "https://github.com/AAShenaifi", "color": "#fefcff", "stroke": true, "svg": "<path d=\"M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22\"/>" },
+    { "label": "Instagram", "url": "https://instagram.com/AAShenaifi", "color": "#e1306c", "stroke": true, "svg": "<rect x=\"2\" y=\"2\" width=\"20\" height=\"20\" rx=\"5\"/><path d=\"M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z\"/><line x1=\"17.5\" y1=\"6.5\" x2=\"17.51\" y2=\"6.5\"/>" },
+    { "label": "YouTube", "url": "https://www.youtube.com/@AAShenaifi", "color": "#ff0000", "stroke": true, "svg": "<path d=\"M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z\"/><polygon points=\"9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02\"/>" },
+    { "label": "X", "url": "https://x.com/aashenaifi", "color": "#fefcff", "fill": true, "svg": "<path d=\"M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63 4.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z\"/>" },
+    { "label": "WhatsApp", "url": "https://wa.me/966554337765", "color": "#25d366", "fill": true, "svg": "<path d=\"M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.889-9.884a9.82 9.82 0 0 1 6.993 2.898 9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z\"/>" },
+    { "label": "Telegram", "url": "https://t.me/AAShenaifi", "color": "#229ed9", "fill": true, "svg": "<path d=\"M21.5 2.5l-19 7.5c-1 .4-1 1.5-.1 1.8l4.8 1.5 1.8 5.7c.3.8.6.9 1.2.4l2.6-2.4 4.9 3.6c.9.5 1.6.2 1.8-.8l3.2-15c.3-1.2-.5-1.8-1.2-1.6zM9 14.6l8.5-5.3c.4-.2.7.1.4.4l-7 6.3-.3 3-1.6-4.4z\"/>" },
+    { "label": "Snapchat", "url": "https://www.snapchat.com/add/aashenaifi", "color": "#fffc00", "fill": true, "svg": "<path d=\"M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.71 4.005.255.044.435.27.42.524 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.286 1.288-.06 0-.119-.015-.18-.015h-.149c-1.46 0-2.434-.689-3.286-1.288-.599-.42-1.107-.78-1.722-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.19-1.226-.029-.066-.045-.149-.045-.225-.015-.255.164-.481.42-.524 3.184-.523 4.649-3.869 4.71-4.011l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.299 1.104.299.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.65.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z\"/>" }
+  ]
+}

@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Abdullah Alshenaifi — Electronics Engineer. Embedded systems, IoT, PCB design, robotics, and 3D printing." />
+<title>Abdullah Alshenaifi — Electronics Engineer</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%2380519F'>A</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+/* ───────────────── TOKENS ───────────────── */
+:root{
+  --canvas:#0c0a0f;
+  --canvas2:#101010;
+  --surface:#16121d;
+  --mid:#2a1845;
+  --lav-800:#3d1d5e;
+  --lav:#80519f;          /* primary */
+  --lav-light:#a87fc4;
+  --lav-200:#e1cce8;
+  --white:#fefcff;
+  --blue:#0a84ff;         /* electric accent */
+  --gold:#d4af37;         /* highlight */
+  --line:rgba(225,204,232,0.08);
+  --line2:rgba(225,204,232,0.04);
+  --t-1:rgba(254,252,255,0.92);
+  --t-2:rgba(254,252,255,0.55);
+  --t-3:rgba(254,252,255,0.30);
+  --t-4:rgba(254,252,255,0.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--canvas);
+  color:var(--t-1);
+  font-family:'Cairo',system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+body.locked{overflow:hidden;height:100vh}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:inherit;text-decoration:none}
+img{display:block}
+::selection{background:rgba(128,81,159,0.4);color:var(--white)}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--canvas)}
+::-webkit-scrollbar-thumb{background:rgba(128,81,159,0.4);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:rgba(128,81,159,0.6)}
+
+/* ───────────────── BG LAYERS ───────────────── */
+.bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
+.dotgrid{
+  position:absolute;inset:0;opacity:.5;
+  background-image:radial-gradient(circle at 1px 1px,rgba(128,81,159,.14) 1px,transparent 0);
+  background-size:30px 30px;
+}
+.measgrid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(128,81,159,.035) 1px,transparent 1px);
+  background-size:100% 70px;
+}
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+.orb1{width:600px;height:600px;top:-10%;right:-8%;background:radial-gradient(circle,rgba(128,81,159,.22),transparent 70%)}
+.orb2{width:500px;height:500px;bottom:5%;left:-10%;background:radial-gradient(circle,rgba(10,132,255,.12),transparent 70%)}
+.scanline{position:fixed;left:0;right:0;top:0;height:2px;z-index:60;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(10,132,255,.18),transparent);
+  animation:scan 9s linear infinite}
+@keyframes scan{from{transform:translateY(-10px)}to{transform:translateY(100vh)}}
+
+/* ───────────────── KEYFRAMES ───────────────── */
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.12)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.reveal{opacity:0}
+.reveal.in{animation:fadeUp .7s cubic-bezier(.4,0,.2,1) forwards}
+
+/* ───────────────── BOOT / LAUNCH ───────────────── */
+#boot{position:fixed;inset:0;z-index:100;background:var(--canvas);display:flex;align-items:center;justify-content:center;
+  transition:opacity .7s ease,transform .7s ease}
+#boot.gone{opacity:0;transform:scale(1.02);pointer-events:none}
+.boot-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 30%,rgba(0,0,0,.7))}
+.boot-top,.boot-bot{position:absolute;left:28px;right:28px;display:flex;align-items:center;justify-content:space-between}
+.boot-top{top:24px}.boot-bot{bottom:24px}
+.chip{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--t-4);
+  border:1px solid var(--line);border-radius:5px;padding:6px 11px}
+.idle{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:42px}
+.pad{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center}
+.pad .ring{position:absolute;border-radius:50%}
+.pad .ring1{inset:20px;border:1px solid rgba(128,81,159,.12)}
+.pad .ring2{inset:8px;border:1px dashed rgba(128,81,159,.07)}
+.hole{position:absolute;width:15px;height:15px;border-radius:50%;border:1px solid rgba(128,81,159,.18);background:rgba(0,0,0,.4)}
+.refdes{position:absolute;font-size:8px;letter-spacing:.2em;color:rgba(128,81,159,.35);font-family:'JetBrains Mono',monospace}
+.pbtn{position:relative;width:128px;height:128px;border:none;background:none;cursor:pointer;border-radius:50%}
+.pbtn .glow{position:absolute;inset:-22px;border-radius:50%;background:radial-gradient(circle,rgba(128,81,159,.22),transparent 70%);opacity:0;transition:.3s}
+.pbtn:hover .glow{opacity:1}
+.pbtn .base{position:absolute;inset:0;border-radius:50%;background:linear-gradient(145deg,#221a2c,#0f0b14);
+  border:1px solid rgba(225,204,232,.08);box-shadow:0 10px 40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.05)}
+.pbtn .groove{position:absolute;inset:12px;border-radius:50%;background:linear-gradient(145deg,#0a0810,#16101e);box-shadow:inset 0 3px 10px rgba(0,0,0,.9)}
+.pbtn .cap{position:absolute;inset:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(145deg,#34273f,#1b1426);border:1px solid rgba(225,204,232,.06);
+  box-shadow:0 5px 18px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.06);transition:transform .15s,box-shadow .15s}
+.pbtn:hover .cap{transform:translateY(-2px)}
+.pbtn:active .cap{transform:translateY(3px);box-shadow:0 2px 8px rgba(0,0,0,.9),inset 0 3px 6px rgba(0,0,0,.7)}
+.pbtn svg{width:34px;height:34px;stroke:rgba(128,81,159,.6);transition:.2s}
+.pbtn:hover svg{stroke:var(--lav-light);filter:drop-shadow(0 0 8px rgba(128,81,159,.6))}
+.press{font-size:10px;letter-spacing:.45em;text-transform:uppercase;color:var(--t-3);animation:pulse 2.8s ease-in-out infinite}
+.skip{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--t-3);border:1px solid var(--line);padding:8px 18px;border-radius:8px;
+  cursor:pointer;background:rgba(0,0,0,.3);transition:.2s;z-index:3}
+.skip:hover{color:var(--lav-light);border-color:rgba(128,81,159,.35)}
+/* boot terminal */
+#bootlog{position:relative;z-index:2;display:none;flex-direction:column;align-items:center;gap:20px}
+#bootLogo{height:150px;display:flex;align-items:center;justify-content:center}
+#bootLogo img{width:150px;height:150px;filter:drop-shadow(0 0 22px rgba(10,132,255,.45))}
+.leds{display:flex;gap:14px}
+.led-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+.led{width:10px;height:10px;border-radius:50%;background:#1a1a1a}
+.led-wrap span{font-size:8px;letter-spacing:.15em;color:var(--t-4);font-family:'JetBrains Mono',monospace}
+.term{width:520px;max-width:90vw;border:1px solid var(--line);border-radius:10px;background:rgba(0,0,0,.5);overflow:hidden}
+.term-bar{display:flex;align-items:center;gap:7px;padding:9px 14px;border-bottom:1px solid var(--line2);background:rgba(0,0,0,.3)}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12)}
+.term-bar .lbl{font-size:10px;color:var(--t-4);margin-left:6px;font-family:'JetBrains Mono',monospace}
+.term-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.7;min-height:170px}
+.term-body p{opacity:0}
+.cursor{display:inline-block;width:7px;height:14px;background:var(--lav-light);animation:blink 1.1s step-end infinite;vertical-align:middle}
+.bar{width:520px;max-width:90vw;height:2px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--lav),var(--blue),var(--lav));border-radius:2px;transition:width 2s cubic-bezier(.4,0,.2,1)}
+
+/* ───────────────── HEADER ───────────────── */
+header{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(20px);
+  background:rgba(12,10,15,.82);border-bottom:1px solid var(--line2);transform:translateY(-70px);
+  transition:transform .5s cubic-bezier(.4,0,.2,1)}
+header.show{transform:translateY(0)}
+header .topline{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--lav),var(--blue),transparent);opacity:.4}
+.hwrap{max-width:1120px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:11px}
+.brand img{width:30px;height:30px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(128,81,159,.5))}
+.brand .nm{font-weight:700;font-size:14px;letter-spacing:-.01em}
+.brand .ti{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--lav-light);margin-top:1px}
+nav{display:flex;align-items:center;gap:2px}
+nav button{position:relative;background:none;border:none;cursor:pointer;font-family:'Cairo',sans-serif;
+  font-size:14px;color:var(--t-3);padding:7px 13px;border-radius:7px;transition:color .2s,background .2s}
+nav button:hover{color:var(--t-2)}
+nav button.active{color:var(--lav-light);background:rgba(128,81,159,.1);border:1px solid rgba(128,81,159,.18)}
+.hctrl{display:flex;align-items:center;gap:8px}
+.langbtn{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--lav-light);
+  border:1px solid rgba(128,81,159,.22);background:rgba(128,81,159,.05);padding:5px 11px;border-radius:6px;cursor:pointer;transition:.2s}
+.langbtn:hover{background:rgba(128,81,159,.14)}
+.burger{display:none;background:none;border:none;color:var(--t-2);cursor:pointer;padding:6px}
+.mobnav{display:none;flex-direction:column;border-top:1px solid var(--line2);padding:10px 18px;gap:2px}
+.mobnav button{text-align:start;background:none;border:none;color:var(--t-3);font-family:'Cairo',sans-serif;
+  font-size:15px;padding:11px 12px;border-radius:9px;cursor:pointer}
+.mobnav button.active{color:var(--lav-light);background:rgba(128,81,159,.1)}
+
+/* ───────────────── LAYOUT ───────────────── */
+main{position:relative;z-index:1}
+section{padding:110px 0;position:relative}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.wrap-narrow{max-width:680px;margin:0 auto;padding:0 24px}
+.eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.eyebrow .ln{width:32px;height:1px;background:linear-gradient(90deg,var(--lav),transparent)}
+.eyebrow span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--lav-light)}
+.eyebrow.center{justify-content:center}
+.h2{font-weight:800;font-size:clamp(28px,4vw,42px);letter-spacing:-.02em;line-height:1.1;margin-bottom:8px}
+.sub{font-size:16px;color:var(--t-3);font-weight:300}
+.gold{color:var(--gold)}
+.acc{color:var(--lav-light)}
+
+/* ───────────────── HERO ───────────────── */
+#home{min-height:100vh;display:flex;align-items:center;padding-top:60px}
+.hero-grid{display:grid;grid-template-columns:1fr 360px;gap:56px;align-items:center}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.hero-eyebrow .ln{width:34px;height:1px;background:var(--lav)}
+.hero-eyebrow span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.35em;text-transform:uppercase;color:var(--lav-light)}
+.hname{font-weight:800;font-size:clamp(42px,7vw,78px);line-height:.98;letter-spacing:-.03em;margin-bottom:10px}
+.htitle{font-weight:500;font-size:clamp(19px,3vw,27px);color:var(--t-3);margin-bottom:26px}
+.hsum{font-size:16px;color:var(--t-2);font-weight:300;max-width:520px;margin-bottom:30px;line-height:1.75}
+/* oscilloscope */
+.scope{max-width:460px;margin-bottom:30px}
+.scope-top{display:flex;justify-content:space-between;margin-bottom:6px}
+.scope-top span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em}
+.scope-top .a{color:rgba(128,81,159,.6)}.scope-top .b{color:var(--t-4)}
+.scope-box{position:relative;border:1px solid rgba(128,81,159,.18);border-radius:10px;background:rgba(0,0,0,.4);overflow:hidden;height:96px}
+.scope-box canvas{width:100%;height:100%;display:block}
+.scope-grid{position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(128,81,159,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(128,81,159,.08) 1px,transparent 1px);
+  background-size:100% 24px,46px 100%}
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:99px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.03em}
+.pill.green{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.16);color:rgba(74,222,128,.8)}
+.pill.lav{background:rgba(128,81,159,.07);border:1px solid rgba(128,81,159,.16);color:var(--t-2)}
+.pill .ld{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:blink 2s ease-in-out infinite}
+/* right panel */
+.hero-right{display:flex;flex-direction:column;gap:26px}
+.model-wrap{position:relative;width:100%;height:240px}
+.model-wrap .mglow{position:absolute;inset:0;background:radial-gradient(circle,rgba(128,81,159,.25),transparent 65%);filter:blur(24px)}
+model-viewer{width:100%;height:100%;--poster-color:transparent;background:transparent;position:relative;z-index:1}
+.model-fallback{width:100%;height:100%;display:flex;align-items:center;justify-content:center;animation:floaty 6s ease-in-out infinite}
+.model-fallback img{width:75%;height:75%;object-fit:contain;filter:drop-shadow(0 0 30px rgba(128,81,159,.5))}
+model-viewer{cursor:grab}
+model-viewer:active{cursor:grabbing}
+.drag-hint{position:absolute;bottom:6px;left:50%;transform:translateX(-50%);z-index:2;display:flex;align-items:center;gap:7px;
+  font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--t-3);pointer-events:none;
+  padding:5px 11px;border-radius:99px;background:rgba(12,10,15,.6);border:1px solid var(--line);
+  backdrop-filter:blur(6px);transition:opacity .4s;animation:pulse 3s ease-in-out infinite}
+.drag-hint svg{width:13px;height:13px;color:var(--lav-light)}
+.drag-hint.hidden{opacity:0}
+.spec{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.012);padding:18px 20px}
+.spec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.spec-head span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.3em;color:var(--lav-light)}
+.spec-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line2);font-family:'JetBrains Mono',monospace;font-size:11.5px}
+.spec-row:last-child{border-bottom:none}
+.spec-row .k{color:var(--t-3);letter-spacing:.05em;text-transform:uppercase;font-size:10px}
+.spec-row .v{color:var(--t-2)}.spec-row .v.a{color:var(--lav-light)}
+
+/* ───────────────── ABOUT ───────────────── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:8px}
+.bio{font-size:15.5px;color:var(--t-2);font-weight:300;line-height:1.85}
+.tl{position:relative;padding-inline-start:22px}
+.tl::before{content:"";position:absolute;inset-inline-start:4px;top:6px;bottom:6px;width:1px;background:linear-gradient(var(--lav),transparent)}
+.tl-item{position:relative;padding-bottom:22px}
+.tl-item:last-child{padding-bottom:0}
+.tl-item::before{content:"";position:absolute;inset-inline-start:-22px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--lav);box-shadow:0 0 0 4px rgba(128,81,159,.12)}
+.tl-item h4{font-size:15px;font-weight:700}
+.tl-item h4 a{color:var(--lav-light)}
+.tl-item .role{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-3);margin-top:2px}
+.skills{display:flex;flex-wrap:wrap;gap:9px;margin-top:30px}
+.skill{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t-2);padding:7px 13px;border-radius:8px;
+  background:rgba(128,81,159,.06);border:1px solid rgba(128,81,159,.14);transition:.2s}
+.skill:hover{border-color:rgba(128,81,159,.4);color:var(--lav-light);transform:translateY(-2px)}
+
+/* ───────────────── CARDS (projects/tools) ───────────────── */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{position:relative;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.014);
+  padding:24px;transition:.3s;overflow:hidden}
+.card:hover{border-color:rgba(128,81,159,.3);background:rgba(255,255,255,.03);box-shadow:0 0 34px rgba(128,81,159,.07)}
+.card .corner{position:absolute;top:0;inset-inline-end:0;width:0;height:0;border-style:solid;
+  border-width:0 18px 18px 0;border-color:transparent rgba(128,81,159,.18) transparent transparent;transition:.3s}
+.card:hover .corner{border-color:transparent rgba(128,81,159,.5) transparent transparent}
+.card .pnum{position:absolute;top:12px;inset-inline-start:14px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.15em;color:rgba(128,81,159,.4)}
+.card h3{font-size:17px;font-weight:700;margin:14px 0 4px;letter-spacing:-.01em;transition:.2s;padding-inline-end:24px}
+.card:hover h3{color:var(--lav-light)}
+.card .date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t-3);margin-bottom:10px}
+.card p{font-size:14px;color:var(--t-2);font-weight:300;margin-bottom:16px;line-height:1.7}
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--lav-light);
+  background:rgba(128,81,159,.07);border:1px solid rgba(128,81,159,.14);padding:3px 9px;border-radius:6px}
+.card .links{display:flex;gap:8px;margin-top:14px}
+.icbtn{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--t-3);transition:.2s}
+.icbtn:hover{color:var(--lav-light);border-color:rgba(128,81,159,.35);background:rgba(128,81,159,.1)}
+.icbtn svg{width:15px;height:15px}
+.badge{position:absolute;top:14px;inset-inline-end:30px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:.1em;
+  text-transform:uppercase;padding:3px 8px;border-radius:99px}
+.badge.demo{color:var(--gold);background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.22)}
+.badge.wip{color:var(--blue);background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.22)}
+.tools-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-3);margin-top:18px;
+  padding:12px 16px;border-inline-start:2px solid rgba(212,175,55,.4);background:rgba(212,175,55,.03);border-radius:0 8px 8px 0}
+
+/* ───────────────── FORM ───────────────── */
+form{display:flex;flex-direction:column;gap:18px}
+.field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--t-3);margin-bottom:8px}
+.field input,.field select,.field textarea{width:100%;padding:12px 15px;background:rgba(255,255,255,.025);
+  border:1px solid var(--line);border-radius:10px;color:var(--t-1);font-size:14px;font-family:'Cairo',sans-serif;outline:none;transition:.2s}
+.field textarea{resize:none;line-height:1.6}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(128,81,159,.4);background:rgba(128,81,159,.05)}
+.field select{appearance:none;cursor:pointer}
+.field option{background:#16121d}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 22px;border-radius:11px;
+  font-family:'Cairo',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:.2s;border:1px solid rgba(128,81,159,.24);
+  background:rgba(128,81,159,.12);color:var(--lav-light)}
+.btn:hover{background:rgba(128,81,159,.22);box-shadow:0 0 22px rgba(128,81,159,.18)}
+.btn svg{width:16px;height:16px}
+.btn.gold{border-color:rgba(212,175,55,.28);background:rgba(212,175,55,.1);color:var(--gold)}
+.btn.gold:hover{background:rgba(212,175,55,.18);box-shadow:0 0 22px rgba(212,175,55,.15)}
+.btn.full{width:100%}
+
+/* ───────────────── CV ───────────────── */
+.cv-frame{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.012);overflow:hidden;
+  margin-bottom:22px;box-shadow:0 24px 80px rgba(0,0,0,.5)}
+.cv-bar{display:flex;align-items:center;gap:9px;padding:11px 18px;border-bottom:1px solid var(--line2);background:rgba(0,0,0,.25)}
+.cv-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--t-4);margin-inline-start:6px}
+.cv-bar .live{margin-inline-start:auto;display:flex;align-items:center;gap:6px}
+.cv-bar .live i{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+.cv-bar .live span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t-4)}
+.cv-frame iframe{width:100%;height:70vh;max-height:760px;border:none;display:block}
+.cv-card{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;
+  background:rgba(255,255,255,.015);padding:24px;max-width:640px}
+.cv-card-ic{width:54px;height:54px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(128,81,159,.1);border:1px solid rgba(128,81,159,.2);color:var(--lav-light)}
+.cv-card-ic svg{width:26px;height:26px}
+.cv-card-meta{flex:1;min-width:160px}
+.cv-card-meta h3{font-size:14px;color:var(--t-1);letter-spacing:.02em;margin-bottom:4px}
+.cv-card-meta p{font-size:12.5px;color:var(--t-3);font-weight:300}
+.cv-card-actions{display:flex;gap:10px;flex-wrap:wrap}
+.cv-card-actions .btn{padding:10px 16px;font-size:13px}
+
+/* ───────────────── CONTACT ───────────────── */
+.contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px}
+.cc{display:flex;align-items:center;gap:15px;padding:18px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.015)}
+.cc .ci{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(128,81,159,.09);border:1px solid rgba(128,81,159,.18);color:var(--lav-light)}
+.cc .ci svg{width:19px;height:19px}
+.cc .cv-val{flex:1;min-width:0}
+.cc .cv-val p{font-size:14px;color:var(--t-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.copybtn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;color:var(--t-3);transition:.2s}
+.copybtn:hover{color:var(--lav-light)}.copybtn.done{color:rgba(74,222,128,.8)}
+.copybtn svg{width:12px;height:12px}
+.divider{display:flex;align-items:center;gap:16px;margin:28px 0}
+.divider .ln{flex:1;height:1px;background:var(--line2)}
+.divider span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.2em;color:var(--t-4)}
+.socials{display:flex;flex-wrap:wrap;justify-content:center;gap:11px;margin-bottom:30px}
+.soc{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.025);border:1px solid var(--line);color:var(--t-3);transition:.2s}
+.soc:hover{transform:translateY(-3px);background:rgba(255,255,255,.06);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.soc svg{width:20px;height:20px;display:block}
+.vcard-wrap{display:flex;justify-content:center}
+footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line2);text-align:center}
+footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
+
+/* ───────────────── RESPONSIVE ───────────────── */
+@media(max-width:880px){
+  .hero-grid{grid-template-columns:1fr;gap:38px}
+  .hero-right{display:none}
+  .about-grid,.cards,.contact-cards{grid-template-columns:1fr}
+  nav{display:none}
+  .burger{display:block}
+  header.menu-open .mobnav{display:flex}
+  section{padding:84px 0}
+}
+/* Arabic must always render in Cairo — JetBrains Mono has no Arabic glyphs */
+[dir="rtl"] body,[dir="rtl"] body *{font-family:'Cairo',sans-serif !important}
+</style>
+</head>
+<body class="locked">
+
+<!-- BACKGROUND -->
+<div class="bg-fixed">
+  <div class="dotgrid"></div>
+  <div class="measgrid"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+<div class="scanline"></div>
+
+<!-- Preload the Cairo Arabic subset on first paint so AR text renders in Cairo instantly -->
+<div aria-hidden="true" style="position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden;font-family:'Cairo',sans-serif">
+  <span style="font-weight:300">عبدالله الشنيفي مهندس إلكترونيات</span>
+  <span style="font-weight:500">عبدالله الشنيفي مهندس إلكترونيات</span>
+  <span style="font-weight:800">عبدالله الشنيفي مهندس إلكترونيات</span>
+</div>
+
+<!-- ───────── BOOT / LAUNCH ───────── -->
+<div id="boot">
+  <div class="boot-vignette"></div>
+  <div class="boot-top">
+    <div class="chip mono">PORTFOLIO-PCB-REV3 / AA-2026</div>
+    <button class="langbtn" id="bootLang">عربي</button>
+  </div>
+
+  <!-- idle -->
+  <div class="idle" id="bootIdle">
+    <div class="pad">
+      <div class="ring ring1"></div><div class="ring ring2"></div>
+      <div class="hole" style="top:4px;left:4px"></div>
+      <div class="hole" style="top:4px;right:4px"></div>
+      <div class="hole" style="bottom:4px;left:4px"></div>
+      <div class="hole" style="bottom:4px;right:4px"></div>
+      <div class="refdes" style="top:6px;left:50%;transform:translateX(-50%)">SW1</div>
+      <div class="refdes" style="bottom:6px;left:50%;transform:translateX(-50%)">PWR_ON</div>
+      <button class="pbtn" id="powerBtn" aria-label="Power on">
+        <div class="glow"></div><div class="base"></div><div class="groove"></div>
+        <div class="cap">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v8"/><path d="M18.36 6.64A9 9 0 1 1 5.64 6.64"/></svg>
+        </div>
+      </button>
+    </div>
+    <p class="press" data-t="pressToStart">PRESS TO START</p>
+  </div>
+
+  <!-- boot log -->
+  <div id="bootlog">
+    <div id="bootLogo"></div>
+    <div class="leds" id="leds"></div>
+    <div class="term">
+      <div class="term-bar"><i class="dot"></i><i class="dot"></i><i class="dot"></i><span class="lbl">system.boot — serial0</span></div>
+      <div class="term-body" id="termBody"></div>
+    </div>
+    <div class="bar"><i id="progBar"></i></div>
+  </div>
+
+  <button class="skip" id="skipBtn" data-t="skip">SKIP →</button>
+  <div class="boot-bot"><span class="chip mono" style="border:none;padding:0">REV 3.0 — PCB-001</span></div>
+</div>
+
+<!-- ───────── HEADER ───────── -->
+<header id="header">
+  <div class="topline"></div>
+  <div class="hwrap">
+    <div class="brand">
+      <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6987808e9eda95172160f684/460cc74dc_mylogo1o5Ungrouped.png" alt="Logo"/>
+      <div>
+        <div class="nm" data-t="fullName">Abdullah Alshenaifi</div>
+        <div class="ti" data-t="title">Electronics Engineer</div>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="hctrl">
+      <button class="langbtn" id="langBtn">عربي</button>
+      <button class="burger" id="burger" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobnav" id="mobnav"></div>
+</header>
+
+<main>
+  <!-- ───────── HERO ───────── -->
+  <section id="home">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="hero-eyebrow reveal"><div class="ln"></div><span data-t="heroGreeting">HELLO, I'M</span></div>
+          <h1 class="hname reveal" data-t="fullName">Abdullah Alshenaifi</h1>
+          <p class="htitle reveal" data-t="title">Electronics Engineer</p>
+          <p class="hsum reveal" data-t="heroSummary"></p>
+          <div class="scope reveal">
+            <div class="scope-top"><span class="a mono" id="scopeLabel">CH1 — SINE</span><span class="b mono" id="scopeTime">10kHz · 1ms/div</span></div>
+            <div class="scope-box"><div class="scope-grid"></div><canvas id="scope"></canvas></div>
+          </div>
+          <div class="pills reveal">
+            <div class="pill green"><span class="ld"></span><span data-t="available">Available for opportunities</span></div>
+            <div class="pill lav"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--lav-light)"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-t="basedIn">Riyadh, SA</span></div>
+          </div>
+        </div>
+        <div class="hero-right reveal">
+          <div class="model-wrap">
+            <div class="mglow"></div>
+            <model-viewer id="mv" src="logo.glb" alt="Interactive 3D logo — drag to rotate"
+              camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="2500"
+              rotation-per-second="24deg" interaction-prompt="auto" interaction-prompt-threshold="3000"
+              min-camera-orbit="auto auto auto" max-camera-orbit="auto auto auto"
+              exposure="1.15" shadow-intensity="0" reveal="auto"
+              style="--poster-color:transparent">
+              <div slot="poster" class="model-fallback"><img src="logo-anim.svg" alt="Logo"/></div>
+              <div slot="progress-bar"></div>
+            </model-viewer>
+            <div class="drag-hint" id="dragHint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4"/></svg>
+              <span data-t="dragRotate">DRAG TO ROTATE</span>
+            </div>
+          </div>
+          <div class="spec">
+            <div class="spec-head"><span>DEVICE SPEC</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--lav-light)" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9z"/></svg></div>
+            <div class="spec-row"><span class="k">MCU</span><span class="v a">ESP32 / STM32</span></div>
+            <div class="spec-row"><span class="k" data-t="specProto">Proto</span><span class="v">PCB + 3D Print</span></div>
+            <div class="spec-row"><span class="k">IoT</span><span class="v a">MQTT / HTTP / BLE</span></div>
+            <div class="spec-row"><span class="k">PLC</span><span class="v">Ladder / SCADA</span></div>
+            <div class="spec-row"><span class="k" data-t="specLoc">Location</span><span class="v">Riyadh, SA</span></div>
+            <div class="spec-row"><span class="k" data-t="specStatus">Status</span><span class="v a">● ONLINE</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── ABOUT ───────── -->
+  <section id="about">
+    <div class="wrap">
+      <div class="eyebrow reveal"><div class="ln"></div><span data-t="aboutTag">ABOUT</span></div>
+      <h2 class="h2 reveal" data-t="aboutTitle">About Me</h2>
+      <p class="sub reveal" data-t="aboutSub">Engineer · Educator · Maker</p>
+      <div class="about-grid">
+        <p class="bio reveal" data-t="aboutCont"></p>
+        <div class="reveal">
+          <div class="eyebrow" style="margin-bottom:20px"><div class="ln"></div><span data-t="expTag">EXPERIENCE</span></div>
+          <div class="tl" id="timeline"></div>
+        </div>
+      </div>
+      <div class="eyebrow reveal" style="margin-top:48px"><div class="ln"></div><span data-t="skillsTag">SKILLS</span></div>
+      <div class="skills reveal" id="skills"></div>
+    </div>
+  </section>
+
+  <!-- ───────── PROJECTS ───────── -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="eyebrow reveal"><div class="ln"></div><span data-t="projectsTag">PROJECTS</span></div>
+      <h2 class="h2 reveal" data-t="projectsTitle">Projects</h2>
+      <p class="sub reveal" data-t="projectsSubtitle">Hardware, IoT & automation builds</p>
+      <div class="cards" id="projGrid" style="margin-top:36px"></div>
+    </div>
+  </section>
+
+  <!-- ───────── AI TOOLS ───────── -->
+  <section id="tools">
+    <div class="wrap">
+      <div class="eyebrow reveal"><div class="ln"></div><span data-t="toolsTag">AI TOOLS</span></div>
+      <h2 class="h2 reveal" data-t="toolsTitle">Tools I Built</h2>
+      <p class="sub reveal" data-t="toolsSubtitle">Web utilities crafted with AI — experimental</p>
+      <div class="cards" id="toolsGrid" style="margin-top:36px"></div>
+      <p class="tools-note reveal mono" data-t="toolsNote"></p>
+    </div>
+  </section>
+
+  <!-- ───────── SERVICES ───────── -->
+  <section id="services">
+    <div class="wrap-narrow">
+      <div class="eyebrow reveal"><div class="ln"></div><span data-t="servicesTag">SERVICES</span></div>
+      <h2 class="h2 reveal" data-t="servicesTitle">Request a Service</h2>
+      <p class="sub reveal" data-t="servicesSubtitle">Let's build something together</p>
+      <div id="formZone" class="reveal" style="margin-top:30px"></div>
+    </div>
+  </section>
+
+  <!-- ───────── CV ───────── -->
+  <section id="cv">
+    <div class="wrap">
+      <div class="eyebrow reveal"><div class="ln"></div><span data-t="cvTag">RÉSUMÉ</span></div>
+      <h2 class="h2 reveal" data-t="cvTitle">Curriculum Vitae</h2>
+      <p class="sub reveal" data-t="cvSubtitle">Full résumé available on request</p>
+      <div class="reveal" style="margin-top:32px">
+        <div class="cv-card">
+          <div class="cv-card-ic">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
+          </div>
+          <div class="cv-card-meta">
+            <h3 class="mono">CV — Abdullah Alshenaifi</h3>
+            <p data-t="cvFileNote">PDF · Electronics Engineer · EN / AR</p>
+          </div>
+          <div class="cv-card-actions">
+            <a class="btn" id="cvView" href="#" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span data-t="viewCv">View CV</span>
+            </a>
+            <a class="btn gold" id="cvDownload" href="#" download target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              <span data-t="download">Download CV (PDF)</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── CONTACT ───────── -->
+  <section id="contact">
+    <div class="wrap-narrow">
+      <div class="eyebrow center reveal"><div class="ln"></div><span data-t="contactTag">CONTACT</span><div class="ln" style="background:linear-gradient(270deg,var(--lav),transparent)"></div></div>
+      <h2 class="h2 reveal" style="text-align:center" data-t="contactTitle">Get in Touch</h2>
+      <p class="sub reveal" style="text-align:center" data-t="contactSubtitle">Let's discuss your next project</p>
+      <div style="margin-top:36px">
+        <div class="contact-cards reveal">
+          <div class="cc">
+            <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 5L2 7"/></svg></div>
+            <div class="cv-val"><p id="ccEmail">abdullah@aashenaifi.com</p><button class="copybtn" id="copyEmail" data-copy="abdullah@aashenaifi.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span data-t="copyEmail">Copy Email</span></button></div>
+          </div>
+          <div class="cc">
+            <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+            <div class="cv-val"><p dir="ltr" id="ccPhone">+966 55 433 7765</p><button class="copybtn" id="copyPhone" data-copy="+966554337765"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span data-t="copyPhone">Copy Phone</span></button></div>
+          </div>
+        </div>
+        <div class="divider reveal"><div class="ln"></div><span data-t="socialTag">SOCIAL</span><div class="ln"></div></div>
+        <div class="socials reveal" id="socials"></div>
+        <div class="vcard-wrap reveal">
+          <button class="btn gold" id="vcardBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+            <span data-t="addToContacts">Add to Contacts</span>
+          </button>
+        </div>
+        <footer class="reveal"><p>© <span id="year"></span> Abdullah Alshenaifi. <span data-t="allRights">All rights reserved.</span></p></footer>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ═══════════════ DATA ═══════════════ */
+const T = {
+  en:{
+    pressToStart:"PRESS TO START", skip:"SKIP →",
+    fullName:"Abdullah Alshenaifi", title:"Electronics Engineer",
+    home:"Home", about:"About", projects:"Projects", tools:"AI Tools", services:"Services", cv:"CV", contact:"Contact",
+    heroGreeting:"HELLO, I'M",
+    heroSummary:"Electronics Engineer & IEEE member specializing in embedded systems, IoT, industrial automation, robotics and 3D printing. I design and build hardware that bridges the physical and digital worlds — from prototype to reliable deployment.",
+    available:"Available for opportunities", basedIn:"Riyadh, SA",
+    specProto:"Proto", specLoc:"Location", specStatus:"Status",
+    aboutTag:"ABOUT", aboutTitle:"About Me", aboutSub:"Engineer · Educator · Maker",
+    aboutCont:"An ambitious Electronics Engineer and IEEE Professional Member with a strong foundation in IoT, robotics, and control systems. Currently serving as an Electronics Engineer at the National Company for Glass Industries (Zoujaj), specializing in troubleshooting, automation, and industrial systems optimization. Formerly a lecturer at Princess Nourah bint Abdulrahman University, delivering practical training in Arduino programming, embedded systems, and mechatronics integration. Co-owner of Alamat Robotics, where advanced electronics and PCB designs were developed for robotics and 3D-printing projects. Experienced in technical instruction, product prototyping, and applied research, and professionally accredited by the Saudi Council of Engineers (SEC).",
+    expTag:"EXPERIENCE", skillsTag:"SKILLS",
+    projectsTag:"PROJECTS", projectsTitle:"Projects", projectsSubtitle:"Hardware, IoT & automation builds",
+    toolsTag:"AI TOOLS", toolsTitle:"Tools I Built", toolsSubtitle:"Web utilities crafted with AI — experimental",
+    toolsNote:"⚠ These tools are demos / works-in-progress, still under testing. Features may change or break.",
+    servicesTag:"SERVICES", servicesTitle:"Request a Service", servicesSubtitle:"Let's build something together",
+    nameLabel:"Name", contactLabel:"Email / Phone", serviceType:"Service Type", messageLabel:"Message",
+    selectService:"Select a service type", submit:"Send Request",
+    namePlaceholder:"Your full name", contactPlaceholder:"email@example.com or +966...", messagePlaceholder:"Describe your project or requirements...",
+    training:"Training", pcbDesign:"PCB Design", prototype:"Prototype Development", printing3d:"3D Printing", troubleshooting:"Troubleshooting", consultation:"Technical Consultation",
+    cvTag:"RÉSUMÉ", cvTitle:"Curriculum Vitae", cvSubtitle:"Full résumé available on request", download:"Download CV (PDF)", viewCv:"View CV", cvFileNote:"PDF · Electronics Engineer · EN / AR",
+    formError:"Couldn't send. Please email me directly.", formSentTitle:"Request sent", formSentMsg:"Thanks — I'll get back to you soon.",
+    contactTag:"CONTACT", contactTitle:"Get in Touch", contactSubtitle:"Let's discuss your next project",
+    copyEmail:"Copy Email", copyPhone:"Copy Phone", copied:"Copied!", socialTag:"SOCIAL", addToContacts:"Add to Contacts", allRights:"All rights reserved.",
+    open:"Open", visit:"Visit", dragRotate:"DRAG TO ROTATE",
+  },
+  ar:{
+    pressToStart:"اضغط للبدء", skip:"تخطّي ←",
+    fullName:"عبدالله الشنيفي", title:"مهندس إلكترونيات",
+    home:"الرئيسية", about:"نبذة", projects:"المشاريع", tools:"أدوات الذكاء", services:"الخدمات", cv:"السيرة", contact:"تواصل",
+    heroGreeting:"مرحباً، أنا",
+    heroSummary:"مهندس إلكترونيات وعضو في IEEE، متخصص في الأنظمة المدمجة وإنترنت الأشياء والأتمتة الصناعية والروبوتات والطباعة ثلاثية الأبعاد. أصمم وأبني أجهزة تربط بين العالم المادي والرقمي — من النموذج الأولي إلى النشر الموثوق.",
+    available:"متاح للفرص الوظيفية", basedIn:"الرياض، السعودية",
+    specProto:"النماذج", specLoc:"الموقع", specStatus:"الحالة",
+    aboutTag:"نبذة", aboutTitle:"نبذة عني", aboutSub:"مهندس · مدرّب · صانع",
+    aboutCont:"مهندس إلكترونيات طموح وعضو محترف في IEEE، بخبرة في إنترنت الأشياء والروبوتات وأنظمة التحكم. أعمل حاليًا مهندسَ إلكترونيات في الشركة الوطنية لصناعة الزجاج (زجاج)، ومتخصصًا في صيانة الأنظمة الصناعية واستكشاف الأعطال والأتمتة وتحسين الأداء. عملت سابقًا محاضرًا في جامعة الأميرة نورة بنت عبدالرحمن، وقدمت تدريبًا عمليًا في برمجة الأردوينو والأنظمة المضمنة وتكامل الميكاترونكس. شريك مؤسس في علامات للروبوتات، حيث طُوّرت إلكترونيات متقدمة وتصاميم دوائر مطبوعة لمشاريع روبوتية وطباعة ثلاثية الأبعاد. لدي خبرة في التدريب التقني وتصميم النماذج الأولية والبحث التطبيقي، ومعتمد مهنيًا من الهيئة السعودية للمهندسين.",
+    expTag:"الخبرات", skillsTag:"المهارات",
+    projectsTag:"المشاريع", projectsTitle:"المشاريع", projectsSubtitle:"مشاريع أجهزة وإنترنت الأشياء والأتمتة",
+    toolsTag:"أدوات الذكاء", toolsTitle:"أدوات صنعتها", toolsSubtitle:"أدوات ويب بُنيت بمساعدة الذكاء الاصطناعي — تجريبية",
+    toolsNote:"⚠ هذه الأدوات نسخ تجريبية / قيد التطوير وما زالت تحت الاختبار. قد تتغير الميزات أو تتعطل.",
+    servicesTag:"الخدمات", servicesTitle:"طلب خدمة", servicesSubtitle:"لنبنِ شيئاً معاً",
+    nameLabel:"الاسم", contactLabel:"البريد / الهاتف", serviceType:"نوع الخدمة", messageLabel:"الرسالة",
+    selectService:"اختر نوع الخدمة", submit:"إرسال الطلب",
+    namePlaceholder:"الاسم الكامل", contactPlaceholder:"email@example.com أو 966+...", messagePlaceholder:"صف مشروعك أو متطلباتك...",
+    training:"تدريب", pcbDesign:"تصميم PCB", prototype:"تطوير نماذج أولية", printing3d:"طباعة ثلاثية الأبعاد", troubleshooting:"حل المشكلات", consultation:"استشارة تقنية",
+    cvTag:"السيرة", cvTitle:"السيرة الذاتية", cvSubtitle:"السيرة الكاملة متاحة عند الطلب", download:"تحميل السيرة (PDF)", viewCv:"عرض السيرة", cvFileNote:"PDF · مهندس إلكترونيات · EN / AR",
+    formError:"تعذّر الإرسال. يرجى مراسلتي عبر البريد مباشرة.", formSentTitle:"تم إرسال الطلب", formSentMsg:"شكراً — سأعود إليك قريباً.",
+    contactTag:"تواصل", contactTitle:"تواصل معي", contactSubtitle:"لنتحدث عن مشروعك القادم",
+    copyEmail:"نسخ البريد", copyPhone:"نسخ الرقم", copied:"تم النسخ!", socialTag:"تواصل", addToContacts:"إضافة لجهات الاتصال", allRights:"جميع الحقوق محفوظة.",
+    open:"فتح", visit:"زيارة", dragRotate:"اسحب للتدوير",
+  }
+};
+
+const NAV = ["home","about","projects","tools","services","cv","contact"];
+
+let EXPERIENCE = [
+  {en:"Alamat Robotics", ar:"علامات للروبوتات", roleEn:"Co-Owner · Apr 2019 – Present", roleAr:"شريك مؤسس · أبريل 2019 – الآن", url:"https://linktr.ee/alamat.robotics"},
+  {en:"Princess Nourah bint Abdulrahman University", ar:"جامعة الأميرة نورة بنت عبدالرحمن", roleEn:"Lecturer · Jan 2025 – Jun 2026", roleAr:"محاضر · يناير 2025 – يونيو 2026", url:"https://pnu.edu.sa"},
+  {en:"The National Company for Glass Industries", ar:"الشركة الوطنية لصناعة الزجاج (زجاج)", roleEn:"Electronics Engineer · Dec 2024 – Dec 2025", roleAr:"مهندس إلكترونيات · ديسمبر 2024 – ديسمبر 2025", url:null},
+  {en:"Tuwaiq Academy", ar:"أكاديمية طويق", roleEn:"Instructor · Jul 2024 – Aug 2024", roleAr:"مدرب · يوليو 2024 – أغسطس 2024", url:"https://tuwaiq.edu.sa"},
+];
+
+let SKILLS = [
+  {en:"Soldering SMT & THT", ar:"لحام SMD و THT"},
+  {en:"3D Modeling & Printing", ar:"تصميم وطباعة ثلاثية الأبعاد"},
+  {en:"PLC Programming", ar:"برمجة الحاكمات (PLC)"},
+  {en:"Arduino", ar:"الأردوينو"},
+  {en:"Proteus", ar:"Proteus"},
+  {en:"MicroC", ar:"MicroC"},
+  {en:"C++", ar:"C++"},
+  {en:"IoT / MQTT", ar:"إنترنت الأشياء / MQTT"},
+  {en:"PCB Design", ar:"تصميم الدوائر المطبوعة"},
+  {en:"Microsoft Office", ar:"برامج الأوفيس"},
+];
+
+let PROJECTS = [
+  {titleEn:"IoT Smart Parking System", titleAr:"نظام مواقف ذكية (IoT)",
+   descEn:"ESP32-based parking management integrated with Blynk IoT for real-time occupancy monitoring and reservation control.",
+   descAr:"نظام إدارة مواقف يعتمد على ESP32 مدمج مع Blynk لمراقبة الإشغال والحجز في الوقت الفعلي.",
+   date:"Nov 2024", tags:["ESP32","Blynk","IoT","Sensors"], url:null},
+  {titleEn:"Smart Safety Helmet", titleAr:"خوذة سلامة ذكية",
+   descEn:"ESP32 wearable with GPS tracking, temperature sensing, fall detection and Telegram alert notifications.",
+   descAr:"جهاز يُلبَس يعتمد على ESP32 مع تتبع GPS واستشعار الحرارة وكشف السقوط وتنبيهات عبر تيليجرام.",
+   date:"Apr 2024", tags:["ESP32","GPS","Fall Detection","Telegram"], url:null},
+  {titleEn:"IoT Water Monitoring — Graduation Project", titleAr:"مراقبة المياه (IoT) — مشروع التخرج",
+   descEn:"Apartment-level water metering with live dashboards and SMS alerts. Electronics design, embedded programming and testing.",
+   descAr:"قياس استهلاك المياه على مستوى الشقق مع لوحات حية وتنبيهات SMS. تصميم إلكتروني وبرمجة مدمجة واختبار.",
+   date:"Mar 2023", tags:["IoT","Dashboards","SMS","Embedded"], url:"https://linktr.ee/smartflows"},
+  {titleEn:"Custom Robotics Mainboard PCB", titleAr:"لوحة تحكم روبوت مخصصة (PCB)",
+   descEn:"Custom robotics mainboard with full schematic and PCB layout, hardware integration and documentation.",
+   descAr:"لوحة تحكم روبوت مخصصة بمخطط كامل وتصميم PCB، وتكامل عتادي وتوثيق.",
+   date:"Aug 2021", tags:["PCB Design","Schematic","Robotics","Hardware"], url:"https://github.com/AAShenaifi/Robots_MainboardPCB"},
+];
+
+let TOOLS = [
+  {titleEn:"LCD Simulator", titleAr:"محاكي شاشات LCD", descEn:"Simulate character-LCD output and generate the matching microcontroller code.", descAr:"محاكاة شاشات LCD النصية وتوليد كود المتحكم المطابق.", url:"https://lcd-simulatorcode.netlify.app/", tags:["Embedded","Codegen"], badge:"wip"},
+  {titleEn:"Chroma — Color Converter", titleAr:"كروما — محوّل الألوان", descEn:"Convert and explore colors across HEX, RGB, HSL and more, with handy palettes.", descAr:"تحويل واستكشاف الألوان بين HEX و RGB و HSL والمزيد مع لوحات جاهزة.", url:"https://chroma-color-converter.netlify.app", tags:["Design","Utility"], badge:"demo"},
+  {titleEn:"HTML → PDF Converter", titleAr:"محوّل HTML إلى PDF", descEn:"Turn HTML content into clean, downloadable PDF documents in the browser.", descAr:"تحويل محتوى HTML إلى ملفات PDF نظيفة قابلة للتحميل من المتصفح.", url:"https://htmltopdfconv.netlify.app/", tags:["Document","Export"], badge:"demo"},
+  {titleEn:"Font Preview Studio", titleAr:"استوديو معاينة الخطوط", descEn:"Preview, compare and audition typefaces with live custom text and styling.", descAr:"معاينة ومقارنة الخطوط مع نص مخصص حي وتنسيقات مباشرة.", url:"https://font-preview-studio.netlify.app/", tags:["Typography","Design"], badge:"wip"},
+];
+
+let SOCIALS = [
+  {label:"LinkedIn", url:"https://www.linkedin.com/in/AAShenaifi", color:"#0a84ff", svg:'<path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>', stroke:true},
+  {label:"GitHub", url:"https://github.com/AAShenaifi", color:"#fefcff", svg:'<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>', stroke:true},
+  {label:"Instagram", url:"https://instagram.com/AAShenaifi", color:"#e1306c", svg:'<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>', stroke:true},
+  {label:"YouTube", url:"https://www.youtube.com/@AAShenaifi", color:"#ff0000", svg:'<path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/>', stroke:true},
+  {label:"X", url:"https://x.com/aashenaifi", color:"#fefcff", svg:'<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.259 5.63 4.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z"/>', fill:true},
+  {label:"WhatsApp", url:"https://wa.me/966554337765", color:"#25d366", svg:'<path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.889-9.884a9.82 9.82 0 0 1 6.993 2.898 9.825 9.825 0 0 1 2.895 6.994c-.003 5.45-4.437 9.884-9.885 9.884zm8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>', fill:true},
+  {label:"Telegram", url:"https://t.me/AAShenaifi", color:"#229ed9", svg:'<path d="M21.5 2.5l-19 7.5c-1 .4-1 1.5-.1 1.8l4.8 1.5 1.8 5.7c.3.8.6.9 1.2.4l2.6-2.4 4.9 3.6c.9.5 1.6.2 1.8-.8l3.2-15c.3-1.2-.5-1.8-1.2-1.6zM9 14.6l8.5-5.3c.4-.2.7.1.4.4l-7 6.3-.3 3-1.6-4.4z"/>', fill:true},
+  {label:"Snapchat", url:"https://www.snapchat.com/add/aashenaifi", color:"#fffc00", svg:'<path d="M12.206.793c.99 0 4.347.276 5.93 3.821.529 1.193.403 3.219.299 4.847l-.003.06c-.012.18-.022.345-.03.51.075.045.203.09.401.09.3-.016.659-.12 1.033-.301.165-.088.344-.104.464-.104.182 0 .359.029.509.09.45.149.734.479.734.838.015.449-.39.839-1.213 1.168-.089.029-.209.075-.344.119-.45.135-1.139.36-1.333.81-.09.224-.061.524.12.868l.015.015c.06.136 1.526 3.475 4.71 4.005.255.044.435.27.42.524 0 .075-.015.149-.045.225-.24.569-1.273.988-3.146 1.271-.059.091-.12.375-.164.57-.029.179-.074.36-.134.553-.076.271-.27.405-.555.405h-.03c-.135 0-.313-.031-.538-.074-.36-.075-.765-.135-1.273-.135-.3 0-.599.015-.913.074-.6.104-1.123.464-1.723.884-.853.599-1.826 1.288-3.286 1.288-.06 0-.119-.015-.18-.015h-.149c-1.46 0-2.434-.689-3.286-1.288-.599-.42-1.107-.78-1.722-.884-.314-.045-.629-.074-.928-.074-.54 0-.958.089-1.272.149-.211.043-.391.074-.54.074-.374 0-.523-.224-.583-.42-.061-.192-.09-.389-.135-.567-.046-.181-.105-.494-.166-.57-1.918-.222-2.95-.642-3.190-1.226-.029-.066-.045-.149-.045-.225-.015-.255.164-.481.42-.524 3.184-.523 4.649-3.869 4.71-4.011l.016-.029c.18-.345.224-.645.119-.869-.195-.434-.884-.658-1.332-.809-.121-.029-.24-.074-.346-.119-1.107-.435-1.257-.93-1.197-1.273.09-.479.674-.793 1.168-.793.146 0 .27.029.383.074.42.194.789.299 1.104.299.234 0 .384-.06.465-.105l-.046-.569c-.098-1.626-.225-3.65.307-4.837C7.392 1.077 10.739.807 11.727.807l.419-.015h.06z"/>', fill:true},
+];
+
+/* ═══════════════ EDITABLE CONFIG (overridable by content.json / dashboard) ═══════════════ */
+let CONFIG = {
+  contact:{ email:"abdullah@aashenaifi.com", phone:"+966554337765", phoneDisplay:"+966 55 433 7765" },
+  cv:{
+    viewEn:"https://drive.google.com/file/d/1cZEHZxhMUXIjrr1uLzr6WmE1njrH8laO/view",
+    viewAr:"https://drive.google.com/file/d/16Vvo1pywdQGr30anaZKNyo-XwunGXnWg/view",
+    downloadEn:"CV-Abdullah-Alshenaifi-EN.pdf",
+    downloadAr:"https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6987808e9eda95172160f684/aaf781e99_AbdullahAlshenaifiElectronicsEngineerAr.pdf"
+  },
+  formspree:"",                                  // e.g. https://formspree.io/f/xxxxxx — empty = fall back to email
+  sections:{ about:true, projects:true, tools:true, services:true, cv:true, contact:true }
+};
+
+/* ═══════════════ STATE & RENDER ═══════════════ */
+let lang = "en";
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+function L(k){ return T[lang][k] ?? T.en[k] ?? k; }
+
+const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
+
+function renderNav(){
+  $("#nav").innerHTML = NAV.map(id=>`<button data-go="${id}">${L(id)}</button>`).join("");
+  $("#mobnav").innerHTML = NAV.map(id=>`<button data-go="${id}">${L(id)}</button>`).join("");
+  $$("[data-go]").forEach(b=>b.onclick=()=>{ go(b.dataset.go); $("#header").classList.remove("menu-open"); });
+}
+function renderTimeline(){
+  $("#timeline").innerHTML = EXPERIENCE.map(e=>{
+    const name = lang==="ar"?e.ar:e.en, role = lang==="ar"?e.roleAr:e.roleEn;
+    const h = e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name} ${arrowSvg.replace('width="24" height="24"','')}</a>`:name;
+    return `<div class="tl-item"><h4>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name}</a>`:name}</h4><div class="role">${role}</div></div>`;
+  }).join("");
+}
+function renderSkills(){
+  $("#skills").innerHTML = SKILLS.map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
+}
+function renderProjects(){
+  $("#projGrid").innerHTML = PROJECTS.map((p,i)=>{
+    const title=lang==="ar"?p.titleAr:p.titleEn, desc=lang==="ar"?p.descAr:p.descEn;
+    const tags=p.tags.map(t=>`<span class="tag">${t}</span>`).join("");
+    const link=p.url?`<div class="links"><a class="icbtn" href="${p.url}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
+    return `<div class="card"><div class="corner"></div><div class="pnum">P${String(i+1).padStart(2,"0")}</div>
+      <h3>${title}</h3><div class="date">${p.date}</div><p>${desc}</p><div class="tags">${tags}</div>${link}</div>`;
+  }).join("");
+}
+function renderTools(){
+  $("#toolsGrid").innerHTML = TOOLS.map((t,i)=>{
+    const title=lang==="ar"?t.titleAr:t.titleEn, desc=lang==="ar"?t.descAr:t.descEn;
+    const tags=t.tags.map(x=>`<span class="tag">${x}</span>`).join("");
+    const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
+    return `<div class="card"><div class="corner"></div><div class="pnum">T${String(i+1).padStart(2,"0")}</div>${badge}
+      <h3>${title}</h3><p style="margin-top:8px">${desc}</p><div class="tags">${tags}</div>
+      <div class="links"><a class="icbtn" href="${t.url}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a></div></div>`;
+  }).join("");
+}
+function renderSocials(){
+  $("#socials").innerHTML = SOCIALS.map(s=>{
+    const inner = s.fill
+      ? `<svg viewBox="0 0 24 24" fill="currentColor">${s.svg}</svg>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg>`;
+    return `<a class="soc" href="${s.url}" target="_blank" rel="noopener" title="${s.label}" data-color="${s.color}">${inner}</a>`;
+  }).join("");
+  $$(".soc").forEach(a=>{
+    a.onmouseenter=()=>a.style.color=a.dataset.color;
+    a.onmouseleave=()=>a.style.color="";
+  });
+}
+const SERVICE_TYPES=["training","pcbDesign","prototype","printing3d","troubleshooting","consultation"];
+function renderForm(){
+  $("#formZone").innerHTML=`
+    <form id="svcForm">
+      <div class="field"><label>${L('nameLabel')}</label><input id="f_name" required placeholder="${L('namePlaceholder')}"/></div>
+      <div class="field"><label>${L('contactLabel')}</label><input id="f_contact" required placeholder="${L('contactPlaceholder')}"/></div>
+      <div class="field"><label>${L('serviceType')}</label><select id="f_type" required>
+        <option value="">${L('selectService')}</option>
+        ${SERVICE_TYPES.map(s=>`<option value="${s}">${L(s)}</option>`).join("")}
+      </select></div>
+      <div class="field"><label>${L('messageLabel')}</label><textarea id="f_msg" rows="4" placeholder="${L('messagePlaceholder')}"></textarea></div>
+      <button type="submit" class="btn full">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>${L('submit')}
+      </button>
+    </form>`;
+  $("#svcForm").onsubmit=async e=>{
+    e.preventDefault();
+    const name=$("#f_name").value, contact=$("#f_contact").value,
+          type=L($("#f_type").value)||$("#f_type").value, msg=$("#f_msg").value;
+    const btn=$("#svcForm button[type=submit]");
+    // If a Formspree endpoint is configured, submit privately to your inbox; else fall back to email.
+    if(CONFIG.formspree){
+      try{
+        btn.disabled=true; btn.style.opacity=".6";
+        const fd=new FormData();
+        fd.append("name",name); fd.append("contact",contact);
+        fd.append("service",type); fd.append("message",msg);
+        fd.append("_subject",`Service Request: ${type} — ${name}`);
+        const r2=await fetch(CONFIG.formspree,{method:"POST",headers:{Accept:"application/json"},body:fd});
+        if(r2.ok){ showFormSuccess(); }
+        else { throw new Error("submit failed"); }
+      }catch(err){
+        btn.disabled=false; btn.style.opacity="1";
+        alert(L("formError")||"Could not send. Please email me directly.");
+      }
+    } else {
+      const subject=encodeURIComponent(`Service Request: ${type} — ${name}`);
+      const body=encodeURIComponent(`Name: ${name}\nContact: ${contact}\nService: ${type}\n\n${msg}`);
+      window.location.href=`mailto:${CONFIG.contact.email}?subject=${subject}&body=${body}`;
+    }
+  };
+}
+function showFormSuccess(){
+  const z=$("#formZone");
+  if(z) z.innerHTML=`<div style="text-align:center;padding:40px 0">
+    <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="rgba(74,222,128,.9)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h3 style="font-weight:700;font-size:19px;margin-bottom:6px">${L("formSentTitle")||"Request sent"}</h3>
+    <p style="color:var(--t-3);font-size:14px">${L("formSentMsg")||"Thanks — I'll get back to you soon."}</p></div>`;
+}
+
+function applyTexts(){
+  $$("[data-t]").forEach(el=>{ el.textContent = L(el.dataset.t); });
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==="ar"?"rtl":"ltr";
+  $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
+  $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
+  // CV per-language — View opens the Drive preview; Download grabs the PDF
+  const vw=$("#cvView"), dl=$("#cvDownload");
+  if(vw) vw.href = lang==="ar" ? CONFIG.cv.viewAr : CONFIG.cv.viewEn;
+  if(dl) dl.href = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
+}
+
+function renderContact(){
+  const c=CONFIG.contact;
+  const em=$("#ccEmail"), ph=$("#ccPhone"), ce=$("#copyEmail"), cp=$("#copyPhone");
+  if(em) em.textContent=c.email;
+  if(ce) ce.dataset.copy=c.email;
+  if(ph) ph.textContent=c.phoneDisplay||c.phone;
+  if(cp) cp.dataset.copy=c.phone;
+}
+
+function applyToggles(){
+  Object.entries(CONFIG.sections||{}).forEach(([id,on])=>{
+    const sec=document.getElementById(id);
+    if(sec && id!=="home") sec.style.display = on ? "" : "none";
+  });
+  // hide nav buttons for hidden sections too
+  $$("#nav button, #mobnav button").forEach(b=>{
+    const id=b.dataset.go;
+    if(id!=="home"&&CONFIG.sections&&CONFIG.sections[id]===false) b.style.display="none";
+  });
+}
+function renderAll(){ renderNav(); renderTimeline(); renderSkills(); renderProjects(); renderTools(); renderSocials(); renderForm(); renderContact(); applyTexts(); applyToggles(); }
+
+function setLang(l){ lang=l; renderAll(); }
+
+/* ═══════════════ NAV / SCROLL ═══════════════ */
+function go(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
+function spy(){
+  let cur="home";
+  NAV.forEach(id=>{ const el=document.getElementById(id); if(el){ const r=el.getBoundingClientRect(); if(r.top<=140) cur=id; }});
+  $$("#nav button, #mobnav button").forEach(b=>b.classList.toggle("active", b.dataset.go===cur));
+}
+
+/* ═══════════════ COPY / VCARD ═══════════════ */
+document.addEventListener("click",e=>{
+  const c=e.target.closest(".copybtn"); if(!c) return;
+  navigator.clipboard.writeText(c.dataset.copy).then(()=>{
+    const span=c.querySelector("span"), old=span.textContent; c.classList.add("done"); span.textContent=L("copied");
+    setTimeout(()=>{c.classList.remove("done"); span.textContent=old;},1800);
+  });
+});
+function vcard(){
+  const c=CONFIG.contact;
+  const v=`BEGIN:VCARD\nVERSION:3.0\nN:AlShenaifi;Abdullah;;;\nFN:Abdullah Alshenaifi\nTITLE:Electronics Engineer\nTEL:${c.phone}\nEMAIL:${c.email}\nURL:https://aashenaifi.com\nEND:VCARD`;
+  const b=new Blob([v],{type:"text/vcard"}), u=URL.createObjectURL(b), a=document.createElement("a");
+  a.href=u; a.download="Abdullah_Alshenaifi.vcf"; a.click(); URL.revokeObjectURL(u);
+}
+
+/* ═══════════════ OSCILLOSCOPE ═══════════════ */
+function scope(){
+  const cv=$("#scope"); if(!cv) return; const ctx=cv.getContext("2d");
+  const label=$("#scopeLabel"); const TAU=Math.PI*2;
+  function size(){ const r=cv.getBoundingClientRect(), dpr=devicePixelRatio||1; cv.width=r.width*dpr; cv.height=r.height*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); }
+  size(); addEventListener("resize",size);
+  const frac=p=>((p/TAU)%1+1)%1; // 0..1 position within one period
+  // real, recognisable signals — each scrolls left as t advances
+  const SIGS=[
+    {n:"CH1 — SINE",      env:false, f:p=>Math.sin(p)},
+    {n:"CH1 — SQUARE",    env:false, f:p=>Math.sign(Math.sin(p))*0.86},
+    {n:"CH1 — PWM 30%",   env:false, f:p=>(frac(p)<0.30?0.86:-0.86)},
+    {n:"CH1 — TRIANGLE",  env:false, f:p=>Math.asin(Math.sin(p))*(2/Math.PI)*0.92},
+    {n:"CH1 — SAWTOOTH",  env:false, f:p=>(2*frac(p)-1)*0.86},
+    {n:"CH1 — AM",        env:true,  f:p=>Math.sin(p*5)*(0.55+0.45*Math.sin(p*0.55)), e:p=>0.55+0.45*Math.sin(p*0.55)},
+    {n:"CH1 — FM",        env:false, f:p=>Math.sin(p*2.1+3.2*Math.sin(p*0.5))},
+  ];
+  const HOLD_MS=3800, DENS=0.085, SPEED=3.6; // SPEED = phase units / second
+  let idx=-1, sig=SIGS[0], t0=performance.now(), w,h,mid, t=0;
+  function trace(fn,col,wdt,glow){
+    ctx.beginPath();
+    for(let x=0;x<=w;x++){ const y=fn(x*DENS - t); const yy=mid - y*(h*0.34); x===0?ctx.moveTo(x,yy):ctx.lineTo(x,yy); }
+    ctx.strokeStyle=col; ctx.lineWidth=wdt; ctx.lineJoin="round";
+    ctx.shadowColor=glow; ctx.shadowBlur=glow?8:0; ctx.stroke(); ctx.shadowBlur=0;
+  }
+  (function loop(ts){
+    ts=ts||performance.now();
+    const el=ts-t0; t=el/1000*SPEED;
+    const ni=Math.floor(el/HOLD_MS)%SIGS.length;
+    if(ni!==idx){ idx=ni; sig=SIGS[idx]; if(label) label.textContent=sig.n; }
+    w=cv.clientWidth; h=cv.clientHeight; mid=h/2;
+    ctx.clearRect(0,0,w,h);
+    if(sig.env){ // AM envelope (faint gold dashed outline)
+      ctx.setLineDash([3,4]);
+      trace(p=>sig.e(p),"rgba(212,175,55,.45)",1,"");
+      trace(p=>-sig.e(p),"rgba(212,175,55,.45)",1,"");
+      ctx.setLineDash([]);
+    }
+    const g=ctx.createLinearGradient(0,0,w,0);
+    g.addColorStop(0,"rgba(128,81,159,0)"); g.addColorStop(.15,"rgba(168,127,196,.95)");
+    g.addColorStop(.7,"rgba(10,132,255,.95)"); g.addColorStop(1,"rgba(10,132,255,0)");
+    trace(sig.f,g,2,"rgba(128,81,159,.6)");
+    requestAnimationFrame(loop);
+  })();
+}
+
+/* ═══════════════ REVEAL ON SCROLL ═══════════════ */
+function reveals(){
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
+  },{threshold:.12, rootMargin:"-40px"});
+  $$(".reveal").forEach((el,i)=>{ el.style.animationDelay=(i%6*0.06)+"s"; io.observe(el); });
+}
+
+/* ═══════════════ BOOT SEQUENCE ═══════════════ */
+const BOOT_LINES=[
+  {t:"PORTFOLIO BIOS v3.0  —  Abdullah Alshenaifi",c:"acc"},
+  {t:"(C) 2026 AAShenaifi Electronics.",c:"dim"},
+  {t:""},
+  {t:"[ 0.0000] Initializing hardware interfaces..."},
+  {t:"[ 0.1248] PCB subsystem: registered",c:"ok"},
+  {t:"[ 0.5124] Embedded + IoT stack: OK",c:"ok"},
+  {t:"[ 0.8762] Robotics / PLC layer: OK",c:"ok"},
+  {t:"[ 1.0240] 3D-print subsystem: OK",c:"ok"},
+  {t:"[ 1.3300] Starting portfolio...",c:"acc"},
+];
+let booted=false;
+function startBoot(){
+  if(booted) return; booted=true;
+  $("#bootIdle").style.display="none"; $("#skipBtn").style.display="none";
+  const bl=$("#bootlog"); bl.style.display="flex";
+  // play the circuit-trace logo animation (cache-bust restarts the SVG's CSS animation)
+  $("#bootLogo").innerHTML='<img alt="Abdullah Alshenaifi logo" src="logo-anim.svg?'+Date.now()+'">';
+  // leds
+  const leds=[["#22c55e","PWR",100],["#80519f","SYS",380],["#0a84ff","NET",660],["#d4af37","ACT",940]];
+  $("#leds").innerHTML=leds.map(l=>`<div class="led-wrap"><div class="led"></div><span>${l[1]}</span></div>`).join("");
+  $$("#leds .led").forEach((d,i)=>setTimeout(()=>{ d.style.background=leds[i][0]; d.style.boxShadow=`0 0 8px ${leds[i][0]}, 0 0 16px ${leds[i][0]}60`; },leds[i][2]));
+  // log
+  const tb=$("#termBody"); const colors={acc:"var(--lav-light)",ok:"rgba(74,222,128,.8)",dim:"var(--t-3)"};
+  BOOT_LINES.forEach((ln,i)=>{
+    const p=document.createElement("p"); p.textContent=ln.t||" "; p.style.color=ln.c?colors[ln.c]:"var(--t-2)";
+    if(ln.t==="") p.style.minHeight="8px";
+    tb.appendChild(p);
+    setTimeout(()=>{ p.style.transition="opacity .15s"; p.style.opacity="1"; },150+i*150);
+  });
+  const cur=document.createElement("span"); cur.className="cursor"; tb.appendChild(cur);
+  $("#progBar").style.transition="width 4s cubic-bezier(.4,0,.2,1)";
+  setTimeout(()=>$("#progBar").style.width="100%",100);
+  setTimeout(finishBoot,4200); // let the logo finish drawing (~3.9s)
+}
+function finishBoot(){
+  $("#boot").classList.add("gone");
+  document.body.classList.remove("locked");
+  $("#header").classList.add("show");
+  setTimeout(()=>{ $("#boot").remove(); },800);
+  reveals();
+}
+function skipBoot(){
+  $("#boot").classList.add("gone"); document.body.classList.remove("locked");
+  $("#header").classList.add("show"); setTimeout(()=>$("#boot").remove(),800); reveals();
+}
+
+/* ═══════════════ RECOLOR 3D LOGO TO BRAND PALETTE ═══════════════ */
+// sRGB hex -> linear-RGB (glTF factors are linear space)
+function hexLin(hex){
+  const n=parseInt(hex.slice(1),16), s=[((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255];
+  return s.map(c=> c<=0.04045 ? c/12.92 : Math.pow((c+0.055)/1.055,2.4));
+}
+const LOGO_LAV=hexLin("#80519f"), LOGO_BLUE=hexLin("#0a84ff"), LOGO_GOLD=hexLin("#d4af37");
+function recolorLogo(){
+  const mv=$("#mv"); if(!mv) return;
+  // hide the "drag to rotate" hint once the user starts interacting
+  const hideHint=()=>{ const h=$("#dragHint"); if(h) h.classList.add("hidden"); };
+  mv.addEventListener("pointerdown",hideHint,{once:true});
+  mv.addEventListener("camera-change",e=>{ if(e.detail&&e.detail.source==="user-interaction") hideHint(); });
+  // if the 3D model can't load (blocked CDN / missing file), surface it for debugging
+  mv.addEventListener("error",ev=>console.warn("[logo] model-viewer error:",ev.detail));
+  mv.addEventListener("load",()=>{
+    try{
+      const mats=(mv.model&&mv.model.materials)||[];
+      console.log("[logo] materials:", mats.map(m=>m.name));
+      // palette to cycle across the model's materials (lavender primary, blue accent, gold)
+      const palette=[LOGO_LAV,LOGO_BLUE,LOGO_GOLD];
+      mats.forEach((m,i)=>{
+        const c=palette[i%palette.length];
+        m.pbrMetallicRoughness.setBaseColorFactor([c[0],c[1],c[2],1]);
+        if(m.setEmissiveFactor) m.setEmissiveFactor([c[0]*0.45,c[1]*0.45,c[2]*0.45]);
+        if(m.pbrMetallicRoughness.setMetallicFactor) m.pbrMetallicRoughness.setMetallicFactor(0.55);
+        if(m.pbrMetallicRoughness.setRoughnessFactor) m.pbrMetallicRoughness.setRoughnessFactor(0.35);
+      });
+    }catch(e){ console.warn("[logo] recolor failed", e); }
+  },{once:true});
+}
+
+/* ═══════════════ CONTENT LOADER (content.json overrides defaults) ═══════════════ */
+async function loadContent(){
+  try{
+    const r=await fetch("content.json",{cache:"no-store"});
+    if(!r.ok) return;
+    const j=await r.json();
+    if(Array.isArray(j.experience)) EXPERIENCE=j.experience;
+    if(Array.isArray(j.skills))     SKILLS=j.skills;
+    if(Array.isArray(j.projects))   PROJECTS=j.projects;
+    if(Array.isArray(j.tools))      TOOLS=j.tools;
+    if(Array.isArray(j.socials))    SOCIALS=j.socials;
+    if(j.contact)   CONFIG.contact={...CONFIG.contact,...j.contact};
+    if(j.cv)        CONFIG.cv={...CONFIG.cv,...j.cv};
+    if(j.sections)  CONFIG.sections={...CONFIG.sections,...j.sections};
+    if(typeof j.formspree==="string") CONFIG.formspree=j.formspree;
+  }catch(e){ /* keep built-in defaults — site still works if content.json is missing */ }
+}
+
+/* ═══════════════ INIT ═══════════════ */
+(async function init(){
+  await loadContent();
+  renderAll();
+  scope();
+  recolorLogo();
+})();
+$("#year").textContent=new Date().getFullYear();
+$("#langBtn").onclick=()=>setLang(lang==="en"?"ar":"en");
+$("#bootLang").onclick=()=>setLang(lang==="en"?"ar":"en");
+$("#powerBtn").onclick=startBoot;
+$("#skipBtn").onclick=skipBoot;
+$("#vcardBtn").onclick=vcard;
+$("#burger").onclick=()=>$("#header").classList.toggle("menu-open");
+addEventListener("scroll",spy,{passive:true});
+// auto-reveal skip hint after 6s of inactivity (keeps button skippable)
+setTimeout(()=>{ if(!booted) $("#skipBtn").style.boxShadow="0 0 18px rgba(128,81,159,.3)"; },6000);
+</script>
+</body>
+</html>
