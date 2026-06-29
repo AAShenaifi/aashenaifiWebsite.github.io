@@ -149,7 +149,7 @@ nav button{position:relative;background:none;border:none;cursor:pointer;font-fam
 nav button:hover{color:var(--t-2)}
 nav button.active{color:var(--lav-light);background:rgba(128,81,159,.1);border:1px solid rgba(128,81,159,.18)}
 .hctrl{display:flex;align-items:center;gap:8px}
-.langbtn{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--lav-light);
+.langbtn{font-family:'Cairo',sans-serif;font-size:13px;letter-spacing:0;color:var(--lav-light);
   border:1px solid rgba(128,81,159,.22);background:rgba(128,81,159,.05);padding:5px 11px;border-radius:6px;cursor:pointer;transition:.2s}
 .langbtn:hover{background:rgba(128,81,159,.14)}
 .burger{display:none;background:none;border:none;color:var(--t-2);cursor:pointer;padding:6px}
@@ -328,7 +328,8 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
 /* ───────────────── RESPONSIVE ───────────────── */
 @media(max-width:880px){
   .hero-grid{grid-template-columns:1fr;gap:38px}
-  .hero-right{display:none}
+  .hero-right{display:flex}
+  .model-wrap{height:200px}
   .about-grid,.cards,.contact-cards{grid-template-columns:1fr}
   nav{display:none}
   .burger{display:block}
@@ -759,7 +760,7 @@ function renderSocials(){
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg>`;
     return `<a class="soc" href="${s.url}" target="_blank" rel="noopener" title="${s.label}" data-color="${s.color}">${inner}</a>`;
   }).join("");
-  $$(".soc").forEach(a=>{
+  $$("  .soc").forEach(a=>{
     a.onmouseenter=()=>a.style.color=a.dataset.color;
     a.onmouseleave=()=>a.style.color="";
   });
@@ -925,7 +926,7 @@ function reveals(){
   const io=new IntersectionObserver((es)=>{
     es.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); }});
   },{threshold:.12, rootMargin:"-40px"});
-  $$(".reveal").forEach((el,i)=>{ el.style.animationDelay=(i%6*0.06)+"s"; io.observe(el); });
+  $$("  .reveal").forEach((el,i)=>{ el.style.animationDelay=(i%6*0.06)+"s"; io.observe(el); });
 }
 
 /* ═══════════════ BOOT SEQUENCE ═══════════════ */
@@ -1045,4 +1046,3 @@ addEventListener("scroll",spy,{passive:true});
 setTimeout(()=>{ if(!booted) $("#skipBtn").style.boxShadow="0 0 18px rgba(128,81,159,.3)"; },6000);
 </script>
 </body>
-</html>
