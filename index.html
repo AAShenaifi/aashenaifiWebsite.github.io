@@ -540,7 +540,7 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
           </div>
         </div>
         <div id="cvPreviewWrap" class="cv-preview-frame">
-          <iframe id="cvIframe" src="" title="CV Preview" loading="lazy"></iframe>
+          <iframe id="cvIframe" src="" title="CV Preview"></iframe>
         </div>
       </div>
     </div>
@@ -824,7 +824,9 @@ function applyTexts(){
   if(cvWrap && cvIf){
     if(CONFIG.cv.showPreview){
       cvWrap.classList.add("show");
-      cvIf.src = _cvAbs(lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn);
+      const newSrc=_cvAbs(lang==="ar"?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn);
+      cvIf.src="";
+      requestAnimationFrame(()=>{ cvIf.src=newSrc; });
     } else {
       cvWrap.classList.remove("show");
       cvIf.src="";
