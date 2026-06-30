@@ -530,10 +530,6 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
             <p data-t="cvFileNote">PDF · Electronics Engineer · EN / AR</p>
           </div>
           <div class="cv-card-actions">
-            <a class="btn" id="cvView" href="#" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span data-t="viewCv">View CV</span>
-            </a>
             <a class="btn gold" id="cvDownload" href="#" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               <span data-t="download">Download CV (PDF)</span>
@@ -717,17 +713,17 @@ function renderNav(){
   $$("[data-go]").forEach(b=>b.onclick=()=>{ go(b.dataset.go); $("#header").classList.remove("menu-open"); });
 }
 function renderTimeline(){
-  $("#timeline").innerHTML = EXPERIENCE.map(e=>{
+  $("#timeline").innerHTML = EXPERIENCE.filter(e=>e.visible!==false).map(e=>{
     const name = lang==="ar"?e.ar:e.en, role = lang==="ar"?e.roleAr:e.roleEn;
     const h = e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name} ${arrowSvg.replace('width="24" height="24"','')}</a>`:name;
     return `<div class="tl-item"><h4>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name}</a>`:name}</h4><div class="role">${role}</div></div>`;
   }).join("");
 }
 function renderSkills(){
-  $("#skills").innerHTML = SKILLS.map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
+  $("#skills").innerHTML = SKILLS.filter(s=>s.visible!==false).map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
 }
 function renderProjects(){
-  $("#projGrid").innerHTML = PROJECTS.map((p,i)=>{
+  $("#projGrid").innerHTML = PROJECTS.filter(p=>p.visible!==false).map((p,i)=>{
     const title=lang==="ar"?p.titleAr:p.titleEn, desc=lang==="ar"?p.descAr:p.descEn;
     const tags=p.tags.map(t=>`<span class="tag">${t}</span>`).join("");
     const link=p.url?`<div class="links"><a class="icbtn" href="${p.url}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
@@ -736,7 +732,7 @@ function renderProjects(){
   }).join("");
 }
 function renderTools(){
-  $("#toolsGrid").innerHTML = TOOLS.map((t,i)=>{
+  $("#toolsGrid").innerHTML = TOOLS.filter(t=>t.visible!==false).map((t,i)=>{
     const title=lang==="ar"?t.titleAr:t.titleEn, desc=lang==="ar"?t.descAr:t.descEn;
     const tags=t.tags.map(x=>`<span class="tag">${x}</span>`).join("");
     const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
@@ -746,7 +742,7 @@ function renderTools(){
   }).join("");
 }
 function renderSocials(){
-  $("#socials").innerHTML = SOCIALS.map(s=>{
+  $("#socials").innerHTML = SOCIALS.filter(s=>s.visible!==false).map(s=>{
     const inner = s.fill
       ? `<svg viewBox="0 0 24 24" fill="currentColor">${s.svg}</svg>`
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg>`;
@@ -815,8 +811,7 @@ function applyTexts(){
   $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
   $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
   // CV links follow the site language
-  const vw=$("#cvView"), dl=$("#cvDownload");
-  if(vw) vw.href = lang==="ar" ? CONFIG.cv.viewAr : CONFIG.cv.viewEn;
+  const dl=$("#cvDownload");
   if(dl){ dl.href = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
     dl.download = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf"; }
 }
