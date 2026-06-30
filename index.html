@@ -533,7 +533,7 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
             <p data-t="cvFileNote">PDF · Electronics Engineer · EN / AR</p>
           </div>
           <div class="cv-card-actions">
-            <a class="btn gold" id="cvDownload" href="#" target="_blank" rel="noopener">
+            <a class="btn gold" id="cvDownload" href="#">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               <span data-t="download">Download CV (PDF)</span>
             </a>
@@ -818,15 +818,20 @@ function applyTexts(){
   $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
   $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
   // CV links follow the site language
+  const _cvBase = new URL("./", document.baseURI).href;
+  const _cvAbs = f => f ? (f.startsWith("http") ? f : _cvBase + f) : "";
   const dl=$("#cvDownload");
-  if(dl){ dl.href = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
-    dl.download = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf"; }
+  if(dl){
+    const file = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
+    const fname = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf";
+    dl.href = _cvAbs(file);
+    dl.download = fname;
+  }
   const cvWrap=$("#cvPreviewWrap"), cvIf=$("#cvIframe");
   if(cvWrap && cvIf){
     if(CONFIG.cv.showPreview){
       cvWrap.classList.add("show");
-      const src=lang==="ar"?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn;
-      cvIf.src=src.startsWith("http")?src:src;
+      cvIf.src = _cvAbs(lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn);
     } else {
       cvWrap.classList.remove("show");
       cvIf.src="";
