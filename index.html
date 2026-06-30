@@ -706,7 +706,7 @@ let CONFIG = {
 };
 
 /* ═══════════════ STATE & RENDER ═══════════════ */
-let lang = "en";
+let lang = localStorage.getItem("lang") || "en";
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
@@ -856,7 +856,7 @@ function applyToggles(){
 }
 function renderAll(){ renderNav(); renderTimeline(); renderSkills(); renderProjects(); renderTools(); renderSocials(); renderForm(); renderContact(); applyTexts(); applyToggles(); }
 
-function setLang(l){ lang=l; renderAll(); }
+function setLang(l){ lang=l; localStorage.setItem("lang",l); renderAll(); }
 
 /* ═══════════════ NAV / SCROLL ═══════════════ */
 function go(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
