@@ -9,7 +9,8 @@
     "viewEn": "https://drive.google.com/file/d/1cZEHZxhMUXIjrr1uLzr6WmE1njrH8laO/view",
     "viewAr": "https://drive.google.com/file/d/16Vvo1pywdQGr30anaZKNyo-XwunGXnWg/view",
     "downloadEn": "CV-Abdullah-Alshenaifi-EN.pdf",
-    "downloadAr": "CV-Abdullah-Alshenaifi-AR.pdf"
+    "downloadAr": "CV-Abdullah-Alshenaifi-AR.pdf",
+    "showPreview": false
   },
   "sections": {
     "about": true,
