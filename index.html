@@ -292,6 +292,9 @@ form{display:flex;flex-direction:column;gap:18px}
 .cv-card-meta p{font-size:12.5px;color:var(--t-3);font-weight:300}
 .cv-card-actions{display:flex;gap:10px;flex-wrap:wrap}
 .cv-card-actions .btn{padding:10px 16px;font-size:13px}
+.cv-preview-frame{display:none;margin-top:22px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.cv-preview-frame.show{display:block}
+.cv-preview-frame iframe{width:100%;height:76vh;min-height:520px;border:none;display:block}
 
 /* ───────────────── CONTACT ───────────────── */
 .contact-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:30px}
@@ -530,15 +533,14 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
             <p data-t="cvFileNote">PDF · Electronics Engineer · EN / AR</p>
           </div>
           <div class="cv-card-actions">
-            <a class="btn" id="cvView" href="#" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span data-t="viewCv">View CV</span>
-            </a>
             <a class="btn gold" id="cvDownload" href="#" target="_blank" rel="noopener">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               <span data-t="download">Download CV (PDF)</span>
             </a>
           </div>
+        </div>
+        <div id="cvPreviewWrap" class="cv-preview-frame">
+          <iframe id="cvIframe" src="" title="CV Preview" loading="lazy"></iframe>
         </div>
       </div>
     </div>
@@ -696,14 +698,15 @@ let CONFIG = {
     viewEn:"https://drive.google.com/file/d/1cZEHZxhMUXIjrr1uLzr6WmE1njrH8laO/view",
     viewAr:"https://drive.google.com/file/d/16Vvo1pywdQGr30anaZKNyo-XwunGXnWg/view",
     downloadEn:"CV-Abdullah-Alshenaifi-EN.pdf",
-    downloadAr:"https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6987808e9eda95172160f684/aaf781e99_AbdullahAlshenaifiElectronicsEngineerAr.pdf"
+    downloadAr:"CV-Abdullah-Alshenaifi-AR.pdf",
+    showPreview:false
   },
   formspree:"",                                  // e.g. https://formspree.io/f/xxxxxx — empty = fall back to email
   sections:{ about:true, projects:true, tools:true, services:true, cv:true, contact:true }
 };
 
 /* ═══════════════ STATE & RENDER ═══════════════ */
-let lang = "en";
+let lang = localStorage.getItem("lang") || "en";
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
@@ -717,17 +720,17 @@ function renderNav(){
   $$("[data-go]").forEach(b=>b.onclick=()=>{ go(b.dataset.go); $("#header").classList.remove("menu-open"); });
 }
 function renderTimeline(){
-  $("#timeline").innerHTML = EXPERIENCE.map(e=>{
+  $("#timeline").innerHTML = EXPERIENCE.filter(e=>e.visible!==false).map(e=>{
     const name = lang==="ar"?e.ar:e.en, role = lang==="ar"?e.roleAr:e.roleEn;
     const h = e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name} ${arrowSvg.replace('width="24" height="24"','')}</a>`:name;
     return `<div class="tl-item"><h4>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name}</a>`:name}</h4><div class="role">${role}</div></div>`;
   }).join("");
 }
 function renderSkills(){
-  $("#skills").innerHTML = SKILLS.map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
+  $("#skills").innerHTML = SKILLS.filter(s=>s.visible!==false).map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
 }
 function renderProjects(){
-  $("#projGrid").innerHTML = PROJECTS.map((p,i)=>{
+  $("#projGrid").innerHTML = PROJECTS.filter(p=>p.visible!==false).map((p,i)=>{
     const title=lang==="ar"?p.titleAr:p.titleEn, desc=lang==="ar"?p.descAr:p.descEn;
     const tags=p.tags.map(t=>`<span class="tag">${t}</span>`).join("");
     const link=p.url?`<div class="links"><a class="icbtn" href="${p.url}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
@@ -736,7 +739,7 @@ function renderProjects(){
   }).join("");
 }
 function renderTools(){
-  $("#toolsGrid").innerHTML = TOOLS.map((t,i)=>{
+  $("#toolsGrid").innerHTML = TOOLS.filter(t=>t.visible!==false).map((t,i)=>{
     const title=lang==="ar"?t.titleAr:t.titleEn, desc=lang==="ar"?t.descAr:t.descEn;
     const tags=t.tags.map(x=>`<span class="tag">${x}</span>`).join("");
     const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
@@ -746,7 +749,7 @@ function renderTools(){
   }).join("");
 }
 function renderSocials(){
-  $("#socials").innerHTML = SOCIALS.map(s=>{
+  $("#socials").innerHTML = SOCIALS.filter(s=>s.visible!==false).map(s=>{
     const inner = s.fill
       ? `<svg viewBox="0 0 24 24" fill="currentColor">${s.svg}</svg>`
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg>`;
@@ -815,10 +818,20 @@ function applyTexts(){
   $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
   $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
   // CV links follow the site language
-  const vw=$("#cvView"), dl=$("#cvDownload");
-  if(vw) vw.href = lang==="ar" ? CONFIG.cv.viewAr : CONFIG.cv.viewEn;
+  const dl=$("#cvDownload");
   if(dl){ dl.href = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
     dl.download = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf"; }
+  const cvWrap=$("#cvPreviewWrap"), cvIf=$("#cvIframe");
+  if(cvWrap && cvIf){
+    if(CONFIG.cv.showPreview){
+      cvWrap.classList.add("show");
+      const src=lang==="ar"?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn;
+      cvIf.src=src.startsWith("http")?src:src;
+    } else {
+      cvWrap.classList.remove("show");
+      cvIf.src="";
+    }
+  }
 }
 
 function renderContact(){
@@ -843,7 +856,7 @@ function applyToggles(){
 }
 function renderAll(){ renderNav(); renderTimeline(); renderSkills(); renderProjects(); renderTools(); renderSocials(); renderForm(); renderContact(); applyTexts(); applyToggles(); }
 
-function setLang(l){ lang=l; renderAll(); }
+function setLang(l){ lang=l; localStorage.setItem("lang",l); renderAll(); }
 
 /* ═══════════════ NAV / SCROLL ═══════════════ */
 function go(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
@@ -1017,6 +1030,19 @@ async function loadContent(){
     if(j.cv)        CONFIG.cv={...CONFIG.cv,...j.cv};
     if(j.sections)  CONFIG.sections={...CONFIG.sections,...j.sections};
     if(typeof j.formspree==="string") CONFIG.formspree=j.formspree;
+    if(j.text){
+      const t=j.text;
+      if(t.fullNameEn)     T.en.fullName=t.fullNameEn;
+      if(t.fullNameAr)     T.ar.fullName=t.fullNameAr;
+      if(t.jobTitleEn)     T.en.title=t.jobTitleEn;
+      if(t.jobTitleAr)     T.ar.title=t.jobTitleAr;
+      if(t.heroSummaryEn)  T.en.heroSummary=t.heroSummaryEn;
+      if(t.heroSummaryAr)  T.ar.heroSummary=t.heroSummaryAr;
+      if(t.aboutSubEn)     T.en.aboutSub=t.aboutSubEn;
+      if(t.aboutSubAr)     T.ar.aboutSub=t.aboutSubAr;
+      if(t.aboutBioEn)     T.en.aboutCont=t.aboutBioEn;
+      if(t.aboutBioAr)     T.ar.aboutCont=t.aboutBioAr;
+    }
   }catch(e){ /* keep built-in defaults — site still works if content.json is missing */ }
 }
 
