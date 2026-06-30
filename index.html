@@ -817,16 +817,9 @@ function applyTexts(){
   document.documentElement.dir = lang==="ar"?"rtl":"ltr";
   $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
   $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
-  // CV links follow the site language
+  // CV iframe preview follows language
   const _cvBase = new URL("./", document.baseURI).href;
   const _cvAbs = f => f ? (f.startsWith("http") ? f : _cvBase + f) : "";
-  const dl=$("#cvDownload");
-  if(dl){
-    const file = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
-    const fname = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf";
-    dl.href = _cvAbs(file);
-    dl.download = fname;
-  }
   const cvWrap=$("#cvPreviewWrap"), cvIf=$("#cvIframe");
   if(cvWrap && cvIf){
     if(CONFIG.cv.showPreview){
@@ -1061,6 +1054,24 @@ async function loadContent(){
 $("#year").textContent=new Date().getFullYear();
 $("#langBtn").onclick=()=>setLang(lang==="en"?"ar":"en");
 $("#bootLang").onclick=()=>setLang(lang==="en"?"ar":"en");
+// CV download — resolve correct language PDF at click time (never stale)
+(function(){
+  const btn=$("#cvDownload");
+  if(!btn) return;
+  btn.removeAttribute("href");
+  btn.onclick=function(e){
+    e.preventDefault();
+    const base=new URL("./",document.baseURI).href;
+    const abs=f=>f?(f.startsWith("http")?f:base+f):"";
+    const file=lang==="ar"?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn;
+    const fname=lang==="ar"?"CV-Abdullah-Alshenaifi-AR.pdf":"CV-Abdullah-Alshenaifi-EN.pdf";
+    const url=abs(file);
+    if(!url) return;
+    const a=document.createElement("a");
+    a.href=url; a.download=fname;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+}());
 $("#powerBtn").onclick=startBoot;
 $("#skipBtn").onclick=skipBoot;
 $("#vcardBtn").onclick=vcard;
