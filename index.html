@@ -282,29 +282,15 @@ form{display:flex;flex-direction:column;gap:18px}
 .btn.full{width:100%}
 
 /* ───────────────── CV ───────────────── */
-.cv-tabs{display:flex;gap:5px;padding:4px;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:11px;width:fit-content;margin-bottom:16px}
-.cv-tab{padding:8px 24px;border-radius:8px;border:none;background:none;color:var(--t-2);font-family:'Cairo',sans-serif;font-size:13.5px;font-weight:700;cursor:pointer;transition:.18s;letter-spacing:.01em}
-.cv-tab.active{background:rgba(128,81,159,.22);color:var(--lav-light);box-shadow:0 0 12px rgba(128,81,159,.15)}
-.cv-tab:hover:not(.active){background:rgba(255,255,255,.05);color:var(--t-1)}
-.cv-frame{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.012);overflow:hidden;
-  margin-top:18px;box-shadow:0 24px 80px rgba(0,0,0,.5)}
-.cv-bar{display:flex;align-items:center;gap:9px;padding:11px 18px;border-bottom:1px solid var(--line2);background:rgba(0,0,0,.25)}
-.cv-bar .dots{display:flex;gap:5px}
-.cv-bar .dots i{width:10px;height:10px;border-radius:50%}
-.cv-bar .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--t-4);margin-inline-start:6px}
-.cv-bar .live{margin-inline-start:auto;display:flex;align-items:center;gap:6px}
-.cv-bar .live i{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
-.cv-bar .live span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t-4)}
-.cv-frame iframe{width:100%;height:70vh;max-height:760px;border:none;display:block}
 .cv-card{display:flex;align-items:center;gap:20px;flex-wrap:wrap;border:1px solid var(--line);border-radius:16px;
-  background:rgba(255,255,255,.015);padding:24px;max-width:720px}
+  background:rgba(255,255,255,.015);padding:24px;max-width:640px}
 .cv-card-ic{width:54px;height:54px;border-radius:13px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
   background:rgba(128,81,159,.1);border:1px solid rgba(128,81,159,.2);color:var(--lav-light)}
 .cv-card-ic svg{width:26px;height:26px}
 .cv-card-meta{flex:1;min-width:160px}
 .cv-card-meta h3{font-size:14px;color:var(--t-1);letter-spacing:.02em;margin-bottom:4px}
 .cv-card-meta p{font-size:12.5px;color:var(--t-3);font-weight:300}
-.cv-card-actions{display:flex;gap:10px;flex-wrap:wrap;width:100%}
+.cv-card-actions{display:flex;gap:10px;flex-wrap:wrap}
 .cv-card-actions .btn{padding:10px 16px;font-size:13px}
 
 /* ───────────────── CONTACT ───────────────── */
@@ -535,18 +521,13 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
       <h2 class="h2 reveal" data-t="cvTitle">Curriculum Vitae</h2>
       <p class="sub reveal" data-t="cvSubtitle">Full résumé available on request</p>
       <div class="reveal" style="margin-top:32px">
-        <!-- EN / AR language tabs -->
-        <div class="cv-tabs">
-          <button class="cv-tab active" id="cvTabEn">English</button>
-          <button class="cv-tab" id="cvTabAr">العربية</button>
-        </div>
         <div class="cv-card">
           <div class="cv-card-ic">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h4"/></svg>
           </div>
           <div class="cv-card-meta">
             <h3 class="mono">CV — Abdullah Alshenaifi</h3>
-            <p id="cvLangNote">PDF · Electronics Engineer · EN</p>
+            <p data-t="cvFileNote">PDF · Electronics Engineer · EN / AR</p>
           </div>
           <div class="cv-card-actions">
             <a class="btn" id="cvView" href="#" target="_blank" rel="noopener">
@@ -557,20 +538,7 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
               <span data-t="download">Download CV (PDF)</span>
             </a>
-            <button class="btn ghost" id="cvPreviewBtn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span id="cvPreviewBtnTxt">Show Preview</span>
-            </button>
           </div>
-        </div>
-        <!-- Collapsible iframe preview -->
-        <div id="cvPreviewWrap" class="cv-frame" style="display:none">
-          <div class="cv-bar">
-            <div class="dots"><i style="background:rgba(255,90,90,.55)"></i><i style="background:rgba(255,200,0,.5)"></i><i style="background:rgba(70,200,120,.5)"></i></div>
-            <span class="lbl" id="cvBarLabel">CV — Abdullah Alshenaifi · EN</span>
-            <div class="live"><i></i><span>PDF</span></div>
-          </div>
-          <iframe id="cvIframe" src="" title="CV Preview" loading="lazy"></iframe>
         </div>
       </div>
     </div>
@@ -736,7 +704,6 @@ let CONFIG = {
 
 /* ═══════════════ STATE & RENDER ═══════════════ */
 let lang = "en";
-let cvLang = "en"; // independent CV language tab (EN/AR), syncs with site lang by default
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 
@@ -847,13 +814,11 @@ function applyTexts(){
   document.documentElement.dir = lang==="ar"?"rtl":"ltr";
   $("#langBtn").textContent = lang==="ar"?"EN":"عربي";
   $("#bootLang").textContent = lang==="ar"?"EN":"عربي";
-  // CV tabs & links — controlled by cvLang (synced with site lang)
-  setCvLang(cvLang);
-  // Update preview toggle button text to match site language
-  const pbt=$("#cvPreviewBtnTxt"), pw=$("#cvPreviewWrap");
-  if(pbt && pw) pbt.textContent = pw.style.display==="none"
-    ? (lang==="ar"?"إظهار المعاينة":"Show Preview")
-    : (lang==="ar"?"إخفاء المعاينة":"Hide Preview");
+  // CV links follow the site language
+  const vw=$("#cvView"), dl=$("#cvDownload");
+  if(vw) vw.href = lang==="ar" ? CONFIG.cv.viewAr : CONFIG.cv.viewEn;
+  if(dl){ dl.href = lang==="ar" ? CONFIG.cv.downloadAr : CONFIG.cv.downloadEn;
+    dl.download = lang==="ar" ? "CV-Abdullah-Alshenaifi-AR.pdf" : "CV-Abdullah-Alshenaifi-EN.pdf"; }
 }
 
 function renderContact(){
@@ -878,35 +843,7 @@ function applyToggles(){
 }
 function renderAll(){ renderNav(); renderTimeline(); renderSkills(); renderProjects(); renderTools(); renderSocials(); renderForm(); renderContact(); applyTexts(); applyToggles(); }
 
-function setCvLang(l){
-  cvLang=l;
-  const isAr=l==="ar";
-  const vw=$("#cvView"),dl=$("#cvDownload"),iframe=$("#cvIframe");
-  const note=$("#cvLangNote"),bar=$("#cvBarLabel");
-  const tabEn=$("#cvTabEn"),tabAr=$("#cvTabAr");
-  if(tabEn) tabEn.classList.toggle("active",!isAr);
-  if(tabAr) tabAr.classList.toggle("active",isAr);
-  if(vw) vw.href=isAr?CONFIG.cv.viewAr:CONFIG.cv.viewEn;
-  if(dl){ dl.href=isAr?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn; dl.download=isAr?"CV-Abdullah-Alshenaifi-AR.pdf":"CV-Abdullah-Alshenaifi-EN.pdf"; }
-  if(note) note.textContent=`PDF · ${lang==="ar"?"مهندس إلكترونيات":"Electronics Engineer"} · ${isAr?"AR":"EN"}`;
-  if(bar) bar.textContent=`CV — ${lang==="ar"?"عبدالله الشنيفي":"Abdullah Alshenaifi"} · ${isAr?"AR":"EN"}`;
-  const box=$("#cvPreviewWrap");
-  if(box&&box.style.display!=="none"&&iframe) iframe.src=isAr?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn;
-}
-function toggleCvPreview(){
-  const box=$("#cvPreviewWrap"),btn=$("#cvPreviewBtnTxt"),iframe=$("#cvIframe");
-  if(!box) return;
-  if(box.style.display==="none"){
-    box.style.display="";
-    if(iframe) iframe.src=cvLang==="ar"?CONFIG.cv.downloadAr:CONFIG.cv.downloadEn;
-    if(btn) btn.textContent=lang==="ar"?"إخفاء المعاينة":"Hide Preview";
-  }else{
-    box.style.display="none";
-    if(iframe) iframe.src="";
-    if(btn) btn.textContent=lang==="ar"?"إظهار المعاينة":"Show Preview";
-  }
-}
-function setLang(l){ lang=l; cvLang=l; renderAll(); }
+function setLang(l){ lang=l; renderAll(); }
 
 /* ═══════════════ NAV / SCROLL ═══════════════ */
 function go(id){ const el=document.getElementById(id); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); }
@@ -1097,9 +1034,6 @@ $("#powerBtn").onclick=startBoot;
 $("#skipBtn").onclick=skipBoot;
 $("#vcardBtn").onclick=vcard;
 $("#burger").onclick=()=>$("#header").classList.toggle("menu-open");
-$("#cvTabEn").onclick=()=>setCvLang("en");
-$("#cvTabAr").onclick=()=>setCvLang("ar");
-$("#cvPreviewBtn").onclick=toggleCvPreview;
 addEventListener("scroll",spy,{passive:true});
 // auto-reveal skip hint after 6s of inactivity (keeps button skippable)
 setTimeout(()=>{ if(!booted) $("#skipBtn").style.boxShadow="0 0 18px rgba(128,81,159,.3)"; },6000);
