@@ -27,9 +27,9 @@
   --line:rgba(225,204,232,0.08);
   --line2:rgba(225,204,232,0.04);
   --t-1:rgba(254,252,255,0.92);
-  --t-2:rgba(254,252,255,0.55);
-  --t-3:rgba(254,252,255,0.30);
-  --t-4:rgba(254,252,255,0.16);
+  --t-2:rgba(254,252,255,0.72);   /* ~7:1 — WCAG AAA for normal text */
+  --t-3:rgba(254,252,255,0.55);   /* ~5:1 — WCAG AA; non-essential labels */
+  --t-4:rgba(254,252,255,0.22);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -409,8 +409,8 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
     </div>
     <nav id="nav"></nav>
     <div class="hctrl">
-      <button class="langbtn" id="langBtn">عربي</button>
-      <button class="burger" id="burger" aria-label="Menu">
+      <button class="langbtn" id="langBtn" aria-label="Switch language / تغيير اللغة">عربي</button>
+      <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
       </button>
     </div>
@@ -540,7 +540,7 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
           </div>
         </div>
         <div id="cvPreviewWrap" class="cv-preview-frame">
-          <iframe id="cvIframe" src="" title="CV Preview"></iframe>
+          <iframe id="cvIframe" src="" title="CV Preview" sandbox="allow-same-origin allow-scripts allow-popups" referrerpolicy="no-referrer"></iframe>
         </div>
       </div>
     </div>
@@ -712,40 +712,44 @@ const $$ = s => document.querySelectorAll(s);
 
 function L(k){ return T[lang][k] ?? T.en[k] ?? k; }
 
+/* Escape any content.json-sourced text before it enters innerHTML, and
+   allow only http(s) URLs in hrefs (blocks javascript:/data: injection). */
+const esc = s => String(s??"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "#";
+
 const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
 function renderNav(){
   $("#nav").innerHTML = NAV.map(id=>`<button data-go="${id}">${L(id)}</button>`).join("");
   $("#mobnav").innerHTML = NAV.map(id=>`<button data-go="${id}">${L(id)}</button>`).join("");
-  $$("[data-go]").forEach(b=>b.onclick=()=>{ go(b.dataset.go); $("#header").classList.remove("menu-open"); });
+  $$("[data-go]").forEach(b=>b.onclick=()=>{ go(b.dataset.go); $("#header").classList.remove("menu-open"); $("#burger").setAttribute("aria-expanded","false"); });
 }
 function renderTimeline(){
   $("#timeline").innerHTML = EXPERIENCE.filter(e=>e.visible!==false).map(e=>{
-    const name = lang==="ar"?e.ar:e.en, role = lang==="ar"?e.roleAr:e.roleEn;
-    const h = e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name} ${arrowSvg.replace('width="24" height="24"','')}</a>`:name;
-    return `<div class="tl-item"><h4>${e.url?`<a href="${e.url}" target="_blank" rel="noopener">${name}</a>`:name}</h4><div class="role">${role}</div></div>`;
+    const name = esc(lang==="ar"?e.ar:e.en), role = esc(lang==="ar"?e.roleAr:e.roleEn);
+    return `<div class="tl-item"><h4>${e.url?`<a href="${safeUrl(e.url)}" target="_blank" rel="noopener">${name}</a>`:name}</h4><div class="role">${role}</div></div>`;
   }).join("");
 }
 function renderSkills(){
-  $("#skills").innerHTML = SKILLS.filter(s=>s.visible!==false).map(s=>`<span class="skill">${lang==="ar"?s.ar:s.en}</span>`).join("");
+  $("#skills").innerHTML = SKILLS.filter(s=>s.visible!==false).map(s=>`<span class="skill">${esc(lang==="ar"?s.ar:s.en)}</span>`).join("");
 }
 function renderProjects(){
   $("#projGrid").innerHTML = PROJECTS.filter(p=>p.visible!==false).map((p,i)=>{
-    const title=lang==="ar"?p.titleAr:p.titleEn, desc=lang==="ar"?p.descAr:p.descEn;
-    const tags=p.tags.map(t=>`<span class="tag">${t}</span>`).join("");
-    const link=p.url?`<div class="links"><a class="icbtn" href="${p.url}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
+    const title=esc(lang==="ar"?p.titleAr:p.titleEn), desc=esc(lang==="ar"?p.descAr:p.descEn);
+    const tags=(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+    const link=p.url?`<div class="links"><a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
     return `<div class="card"><div class="corner"></div><div class="pnum">P${String(i+1).padStart(2,"0")}</div>
-      <h3>${title}</h3><div class="date">${p.date}</div><p>${desc}</p><div class="tags">${tags}</div>${link}</div>`;
+      <h3>${title}</h3><div class="date">${esc(p.date)}</div><p>${desc}</p><div class="tags">${tags}</div>${link}</div>`;
   }).join("");
 }
 function renderTools(){
   $("#toolsGrid").innerHTML = TOOLS.filter(t=>t.visible!==false).map((t,i)=>{
-    const title=lang==="ar"?t.titleAr:t.titleEn, desc=lang==="ar"?t.descAr:t.descEn;
-    const tags=t.tags.map(x=>`<span class="tag">${x}</span>`).join("");
+    const title=esc(lang==="ar"?t.titleAr:t.titleEn), desc=esc(lang==="ar"?t.descAr:t.descEn);
+    const tags=(t.tags||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("");
     const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
     return `<div class="card"><div class="corner"></div><div class="pnum">T${String(i+1).padStart(2,"0")}</div>${badge}
       <h3>${title}</h3><p style="margin-top:8px">${desc}</p><div class="tags">${tags}</div>
-      <div class="links"><a class="icbtn" href="${t.url}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a></div></div>`;
+      <div class="links"><a class="icbtn" href="${safeUrl(t.url)}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a></div></div>`;
   }).join("");
 }
 function renderSocials(){
@@ -753,7 +757,7 @@ function renderSocials(){
     const inner = s.fill
       ? `<svg viewBox="0 0 24 24" fill="currentColor">${s.svg}</svg>`
       : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg>`;
-    return `<a class="soc" href="${s.url}" target="_blank" rel="noopener" title="${s.label}" data-color="${s.color}">${inner}</a>`;
+    return `<a class="soc" href="${safeUrl(s.url)}" target="_blank" rel="noopener" title="${esc(s.label)}" aria-label="${esc(s.label)}" data-color="${esc(s.color)}">${inner}</a>`;
   }).join("");
   $$("  .soc").forEach(a=>{
     a.onmouseenter=()=>a.style.color=a.dataset.color;
@@ -1077,7 +1081,7 @@ $("#bootLang").onclick=()=>setLang(lang==="en"?"ar":"en");
 $("#powerBtn").onclick=startBoot;
 $("#skipBtn").onclick=skipBoot;
 $("#vcardBtn").onclick=vcard;
-$("#burger").onclick=()=>$("#header").classList.toggle("menu-open");
+$("#burger").onclick=()=>{ const open=$("#header").classList.toggle("menu-open"); $("#burger").setAttribute("aria-expanded",open); };
 addEventListener("scroll",spy,{passive:true});
 // auto-reveal skip hint after 6s of inactivity (keeps button skippable)
 setTimeout(()=>{ if(!booted) $("#skipBtn").style.boxShadow="0 0 18px rgba(128,81,159,.3)"; },6000);
