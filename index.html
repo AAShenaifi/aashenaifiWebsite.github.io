@@ -1030,6 +1030,19 @@ async function loadContent(){
     if(j.cv)        CONFIG.cv={...CONFIG.cv,...j.cv};
     if(j.sections)  CONFIG.sections={...CONFIG.sections,...j.sections};
     if(typeof j.formspree==="string") CONFIG.formspree=j.formspree;
+    if(j.text){
+      const t=j.text;
+      if(t.fullNameEn)     T.en.fullName=t.fullNameEn;
+      if(t.fullNameAr)     T.ar.fullName=t.fullNameAr;
+      if(t.jobTitleEn)     T.en.title=t.jobTitleEn;
+      if(t.jobTitleAr)     T.ar.title=t.jobTitleAr;
+      if(t.heroSummaryEn)  T.en.heroSummary=t.heroSummaryEn;
+      if(t.heroSummaryAr)  T.ar.heroSummary=t.heroSummaryAr;
+      if(t.aboutSubEn)     T.en.aboutSub=t.aboutSubEn;
+      if(t.aboutSubAr)     T.ar.aboutSub=t.aboutSubAr;
+      if(t.aboutBioEn)     T.en.aboutCont=t.aboutBioEn;
+      if(t.aboutBioAr)     T.ar.aboutCont=t.aboutBioAr;
+    }
   }catch(e){ /* keep built-in defaults — site still works if content.json is missing */ }
 }
 
