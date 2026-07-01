@@ -1,0 +1,15 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Redirecting…</title>
+<script>
+  // GitHub Pages has no server-side routing, so deep links like /projects/foo
+  // 404 here. Stash the intended path and bounce to index.html, which restores
+  // it via history.replaceState and renders the matching view.
+  sessionStorage.setItem("redirectPath", location.pathname + location.search + location.hash);
+  location.replace("/");
+</script>
+</head>
+<body></body>
+</html>

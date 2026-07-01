@@ -117,7 +117,10 @@
         "IoT",
         "Sensors"
       ],
-      "url": null
+      "url": null,
+      "images": [],
+      "driveUrl": null,
+      "embed3d": null
     },
     {
       "titleEn": "Smart Safety Helmet",
@@ -131,7 +134,10 @@
         "Fall Detection",
         "Telegram"
       ],
-      "url": null
+      "url": null,
+      "images": [],
+      "driveUrl": null,
+      "embed3d": null
     },
     {
       "titleEn": "IoT Water Monitoring — Graduation Project",
@@ -145,7 +151,10 @@
         "SMS",
         "Embedded"
       ],
-      "url": "https://linktr.ee/smartflows"
+      "url": "https://linktr.ee/smartflows",
+      "images": [],
+      "driveUrl": "https://drive.google.com/drive/u/2/folders/1BZheJYO5aCFIzq_nSOk5SWQ-Hfazzow-",
+      "embed3d": "https://p3d.in/WMFfB"
     },
     {
       "titleEn": "Custom Robotics Mainboard PCB",
@@ -159,7 +168,10 @@
         "Robotics",
         "Hardware"
       ],
-      "url": "https://github.com/AAShenaifi/Robots_MainboardPCB"
+      "url": "https://github.com/AAShenaifi/Robots_MainboardPCB",
+      "images": [],
+      "driveUrl": null,
+      "embed3d": null
     }
   ],
   "tools": [
