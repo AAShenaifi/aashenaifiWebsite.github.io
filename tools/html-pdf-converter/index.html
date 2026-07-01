@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML → PDF Converter</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0a0f;--surface:#16121d;--surface2:#201a2b;--border:#2e2338;
+  --accent:#80519f;--accent2:#a87fc4;--success:#22c55e;--error:#ef4444;
+  --warn:#f59e0b;--text:#e8eaf0;--text2:#8b90a7;}
+.backbar{width:100%;max-width:680px;display:flex;align-items:center;gap:8px;margin-bottom:22px;
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--text2)}
+.backbar a{color:var(--accent2);text-decoration:none;transition:opacity .15s}
+.backbar a:hover{opacity:.75}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:32px 16px 80px}
+header{text-align:center;margin-bottom:32px}
+.logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:8px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+h1{font-size:22px;font-weight:600;letter-spacing:-0.3px}
+.subtitle{color:var(--text2);font-size:13px;margin-top:4px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:22px;width:100%;max-width:680px;margin-bottom:14px}
+.card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--text2);margin-bottom:14px}
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:4px;margin-bottom:14px}
+.tab{flex:1;padding:8px;border:none;background:transparent;color:var(--text2);
+  font-family:'Inter',sans-serif;font-size:13px;font-weight:500;border-radius:6px;cursor:pointer;transition:.15s}
+.tab.active{background:var(--surface2);color:var(--text)}
+input[type="url"],input[type="text"]{width:100%;background:var(--bg);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;transition:.15s}
+input[type="url"]:focus,input[type="text"]:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text2)}
+.input-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;
+  letter-spacing:.5px;margin-bottom:5px;display:block}
+.upload-area{border:1.5px dashed var(--border);border-radius:10px;padding:28px;text-align:center;
+  cursor:pointer;transition:.2s;position:relative;user-select:none;margin-bottom:12px}
+.upload-area:hover,.upload-area.drag{border-color:var(--accent);background:rgba(128,81,159,.08)}
+.upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:26px;margin-bottom:8px}
+.upload-label{font-size:13px;color:var(--text2)}
+.upload-label span{color:var(--accent)}
+.file-name{font-size:11px;color:var(--success);margin-top:8px;font-family:'JetBrains Mono',monospace;word-break:break-all}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.option-group label{display:block;font-size:11px;font-weight:500;color:var(--text2);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:8px 12px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238b90a7' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center}
+select:focus{border-color:var(--accent)}
+.checkbox-row{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--text2);padding:3px 0}
+.checkbox-row input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.btn-convert{width:100%;max-width:680px;padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border:none;border-radius:10px;color:white;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;
+  cursor:pointer;letter-spacing:-.2px;transition:.15s;margin-bottom:14px}
+.btn-convert:hover{opacity:.9}.btn-convert:active{transform:scale(.99)}
+.btn-convert:disabled{opacity:.4;cursor:not-allowed}
+.status-card{width:100%;max-width:680px;background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:20px;display:none}
+.status-card.visible{display:block}
+.status-row{display:flex;align-items:center;gap:10px;font-size:13px;margin-bottom:10px}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress-bar{height:4px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:14px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+  border-radius:99px;transition:width .4s ease;width:0%}
+.log{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);max-height:130px;overflow-y:auto;line-height:1.8}
+.log .ok{color:var(--success)}.log .err{color:var(--error)}.log .info{color:var(--accent)}.log .warn{color:var(--warn)}
+.download-btn{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:10px 20px;
+  background:var(--success);color:white;border-radius:8px;font-size:13px;font-weight:600;
+  text-decoration:none;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:.15s}
+.download-btn:hover{opacity:.88}
+.note{font-size:11px;color:var(--text2);margin-top:10px;line-height:1.6}.note b{color:var(--text)}
+.divider{border:none;border-top:1px solid var(--border);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="backbar"><a href="../../index.html">← Abdullah Alshenaifi</a><span>/ tools / html → pdf</span></div>
+<header>
+  <div class="logo"><div class="logo-icon">📄</div><h1>HTML → PDF</h1></div>
+  <p class="subtitle">Real selectable text · Images · Hyperlinks · Arabic/RTL</p>
+</header>
+
+<div class="card">
+  <div class="card-title">Input</div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('url')">🔗 URL</button>
+    <button class="tab" onclick="switchTab('file')">📁 HTML File</button>
+  </div>
+  <div id="tab-url">
+    <label class="input-label">Page URL</label>
+    <input type="url" id="urlInput" placeholder="https://..." />
+    <p style="font-size:11px;color:var(--warn);margin-top:8px;">⚠️ Some sites block access. If it fails, save as HTML and upload.</p>
+  </div>
+  <div id="tab-file" style="display:none">
+    <div class="upload-area" id="dropZone">
+      <input type="file" id="fileInput" accept=".html,.htm,.mhtml,.mht" onchange="handleFile(this.files[0])">
+      <div class="upload-icon">🗂️</div>
+      <div class="upload-label">Drop your <span>.html / .mhtml</span> file here or <span>click to browse</span></div>
+      <div class="file-name" id="fileName"></div>
+    </div>
+    <label class="input-label">Source URL <span style="color:var(--text2);text-transform:none;font-weight:400">(optional — fixes relative images/links + shown at top)</span></label>
+    <input type="text" id="fileSourceUrl" placeholder="https://forum.arduino.cc/t/..." />
+    <p style="font-size:11px;color:var(--text2);margin-top:8px;line-height:1.5">💡 <b style="color:var(--text)">HTML Only</b> — works as-is.<br>
+          <b style="color:var(--text)">Single File (.mhtml)</b> — works, extracted automatically.<br>
+          <b style="color:var(--text)">Complete (folder)</b> — upload the .html file and paste the Source URL above so images load from the web.<br>
+          For JS-heavy sites (forums), <b style="color:var(--text)">URL mode</b> grabs everything automatically.</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Options</div>
+  <div class="options-grid">
+    <div class="option-group"><label>Page Size</label>
+      <select id="pageSize"><option>A4</option><option>Letter</option><option>A3</option></select></div>
+    <div class="option-group"><label>Margins</label>
+      <select id="margins"><option value="15">Normal (15mm)</option><option value="10">Narrow (10mm)</option><option value="20">Wide (20mm)</option></select></div>
+    <div class="option-group"><label>Content Mode</label>
+      <select id="contentMode"><option value="full">Full Page</option><option value="clean">Clean (strip nav/ads)</option></select></div>
+    <div class="option-group"><label>Direction</label>
+      <select id="direction"><option value="ltr">LTR (English)</option><option value="rtl">RTL (Arabic)</option></select></div>
+  </div>
+  <hr class="divider">
+  <div style="display:flex;flex-wrap:wrap;gap:14px">
+    <label class="checkbox-row"><input type="checkbox" id="chkImages" checked> Include images</label>
+    <label class="checkbox-row"><input type="checkbox" id="chkLinks" checked> Clickable hyperlinks</label>
+    <label class="checkbox-row"><input type="checkbox" id="chkSourceUrl" checked> Show source URL at top</label>
+    <label class="checkbox-row"><input type="checkbox" id="chkPageNums" checked> Page numbers</label>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Output Filename <span style="color:var(--text2);text-transform:none;font-weight:400;font-size:11px">(optional — auto-generated from page title if empty)</span></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <input type="text" id="customName" placeholder="e.g. Arduino ST7789P3 Forum Thread" style="flex:1" />
+    <span style="color:var(--text2);font-size:13px;white-space:nowrap">.pdf</span>
+  </div>
+  <p style="font-size:11px;color:var(--text2);margin-top:6px">Windows-safe: reserved characters &lt; &gt; : " / \ | ? * are removed automatically.</p>
+</div>
+
+<button class="btn-convert" id="convertBtn" onclick="convert()">Convert to PDF</button>
+
+<div class="status-card" id="statusCard">
+  <div class="status-row"><div class="spinner" id="spinner"></div><span id="statusText">Starting…</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="log" id="log"></div>
+  <div id="downloadArea"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const { jsPDF } = window.jspdf;
+let htmlContent = null, currentTab = 'url';
+const MM = 2.834645669; // mm → pt
+
+function switchTab(tab){currentTab=tab;
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='url')||(i===1&&tab==='file')));
+  document.getElementById('tab-url').style.display=tab==='url'?'block':'none';
+  document.getElementById('tab-file').style.display=tab==='file'?'block':'none';}
+const dropZone=document.getElementById('dropZone');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag')});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
+function handleFile(file){if(!file)return;document.getElementById('fileName').textContent='✓ '+file.name;
+  const r=new FileReader();r.onload=e=>{htmlContent=e.target.result};r.readAsText(file,'UTF-8');}
+function addLog(m,t=''){const el=document.getElementById('log');const d=document.createElement('div');d.className=t;d.textContent=m;el.appendChild(d);el.scrollTop=el.scrollHeight;}
+function setProgress(p,t){document.getElementById('progressFill').style.width=p+'%';document.getElementById('statusText').textContent=t;}
+
+// ── Fetch via proxies ──────────────────────────────────────────────────
+async function fetchURL(url){
+  const proxies=[
+    {u:`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,json:true},
+    {u:`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,json:false},
+    {u:`https://corsproxy.io/?${encodeURIComponent(url)}`,json:false},
+    {u:`https://thingproxy.freeboard.io/fetch/${encodeURIComponent(url)}`,json:false}];
+  for(const p of proxies){
+    try{addLog('Trying '+new URL(p.u).hostname+'…');
+      const res=await fetch(p.u,{signal:AbortSignal.timeout(14000)});
+      if(!res.ok){addLog('HTTP '+res.status,'warn');continue;}
+      const text=p.json?(await res.json()).contents:await res.text();
+      if(text&&text.length>200){addLog('✓ Fetched','ok');return text;}
+    }catch(e){addLog('✗ '+e.message,'warn');}
+  }
+  throw new Error('All proxies failed — save the page as HTML and upload instead.');
+}
+
+// ── Fetch one image → dataURL (via proxy for cross-origin) ─────────────
+async function fetchImage(src){
+  if(src.startsWith('data:'))return src;
+  const tries=[src,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(src)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(src)}`];
+  for(const u of tries){
+    try{
+      const res=await fetch(u,{signal:AbortSignal.timeout(12000)});
+      if(!res.ok)continue;
+      const blob=await res.blob();
+      if(!blob.type.startsWith('image/')&&blob.size<100)continue;
+      return await new Promise((resolve,reject)=>{
+        const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=reject;fr.readAsDataURL(blob);});
+    }catch(e){}
+  }
+  return null;
+}
+
+// ── Extract inline runs (text + bold/italic/code + href) ──────────────
+function extractRuns(node,inh){
+  inh=inh||{bold:false,italic:false,code:false,href:null};
+  const runs=[];
+  node.childNodes.forEach(ch=>{
+    if(ch.nodeType===3){
+      const t=ch.textContent.replace(/\s+/g,' ');
+      if(t.trim()||t===' ')runs.push({...inh,text:t});
+    }else if(ch.nodeType===1){
+      const tag=ch.tagName.toLowerCase();
+      if(tag==='br'){runs.push({...inh,text:'\n'});return;}
+      if(['script','style','svg'].includes(tag))return;
+      const nx={...inh};
+      if(tag==='b'||tag==='strong')nx.bold=true;
+      if(tag==='i'||tag==='em')nx.italic=true;
+      if(tag==='code')nx.code=true;
+      if(tag==='a'&&(ch.href||ch.getAttribute('href')))nx.href=ch.href||ch.getAttribute('href');
+      runs.push(...extractRuns(ch,nx));
+    }
+  });
+  return runs;
+}
+
+function setFontFor(pdf,word,size,fontName){
+  const fam=word.code?'courier':fontName;
+  let st='normal';
+  if(word.bold&&word.italic)st='bolditalic';else if(word.bold)st='bold';else if(word.italic)st='italic';
+  try{pdf.setFont(fam,st);}catch(e){pdf.setFont(fam,'normal');}
+  pdf.setFontSize(word.size||size);
+}
+
+// ── Lay out runs into wrapped lines ───────────────────────────────────
+function layoutRuns(pdf,runs,maxW,size,fontName){
+  const words=[];
+  runs.forEach(run=>{
+    if(run.text==='\n'){words.push({br:true});return;}
+    const parts=run.text.split(' ');
+    parts.forEach(w=>{ if(w!=='')words.push({...run,text:w}); });
+  });
+  const lines=[];let line=[],lineW=0;
+  pdf.setFontSize(size);pdf.setFont(fontName,'normal');
+  const spaceW=pdf.getTextWidth(' ');
+  words.forEach(word=>{
+    if(word.br){lines.push(line);line=[];lineW=0;return;}
+    setFontFor(pdf,word,size,fontName);
+    let w=pdf.getTextWidth(word.text);
+    // hard-break very long words (URLs)
+    if(w>maxW){
+      let chunk='';
+      for(const c of word.text){
+        const cw=pdf.getTextWidth(chunk+c);
+        if(cw>maxW&&chunk){
+          word.w=pdf.getTextWidth(chunk);
+          if(lineW>0){lines.push(line);line=[];lineW=0;}
+          line.push({...word,text:chunk});lines.push(line);line=[];lineW=0;chunk=c;
+        }else chunk+=c;
+      }
+      word.text=chunk;w=pdf.getTextWidth(chunk);
+    }
+    const addW=(line.length?spaceW:0)+w;
+    if(lineW+addW>maxW&&line.length){lines.push(line);line=[];lineW=0;word.w=w;line.push(word);lineW=w;}
+    else{word.w=w;line.push(word);lineW+=addW;}
+  });
+  if(line.length)lines.push(line);
+  return lines;
+}
+
+// ── Main render: DOM walk → selectable PDF ────────────────────────────
+async function buildPDF(raw,opts){
+  // Handle MHTML (Single File saves) — extract HTML part
+  const head=raw.slice(0,2000).toLowerCase();
+  const isMHTML = head.includes('mime-version:') || head.includes('content-type: multipart') || (head.includes('content-transfer-encoding') && head.includes('boundary='));
+  if(isMHTML){
+    addLog('MHTML detected — extracting HTML part…','info');
+    // Find the first text/html part
+    const htmlStart = raw.search(/content-type:\s*text\/html/i);
+    if(htmlStart===-1) throw new Error('Could not extract HTML from this .mhtml file. Try saving as "Web page, HTML Only".');
+    // Skip headers until blank line
+    const afterHeaders = raw.indexOf('\n\n', htmlStart);
+    if(afterHeaders===-1) throw new Error('Malformed MHTML file.');
+    let extracted = raw.slice(afterHeaders+2);
+    // Find next MIME boundary and cut there
+    const boundaryMatch = raw.match(/boundary="([^"]+)"/i) || raw.match(/boundary=([^\r\n;]+)/i);
+    if(boundaryMatch){
+      const boundary = '--' + boundaryMatch[1].trim();
+      const nextBound = extracted.indexOf(boundary);
+      if(nextBound > 0) extracted = extracted.slice(0, nextBound);
+    }
+    // Decode quoted-printable if needed
+    if(raw.slice(htmlStart, htmlStart+400).toLowerCase().includes('quoted-printable')){
+      extracted = extracted.replace(/=\r?\n/g,'').replace(/=([0-9A-Fa-f]{2})/g,(_,h)=>String.fromCharCode(parseInt(h,16)));
+    }
+    raw = extracted;
+    addLog('✓ HTML extracted from MHTML','ok');
+  }
+  const parser=new DOMParser();
+  const doc=parser.parseFromString(raw,'text/html');
+  if(opts.srcURL){let b=doc.querySelector('base');if(!b){b=doc.createElement('base');doc.head.prepend(b);}b.href=opts.srcURL;}
+
+  ['script','noscript','style','[id*="cookie"]','[class*="cookie"]',
+   '[class*="popup"]','[class*="modal"]','[class*="banner"]','nav','header','footer'
+  ].forEach(s=>{try{doc.querySelectorAll(s).forEach(e=>e.remove());}catch(e){}});
+
+  // Extract page title for filename generation
+  const pageTitle = doc.querySelector('title')?.textContent?.trim() || '';
+
+  let root;
+  if(opts.mode==='clean'){
+    // Discourse (forum.arduino.cc etc): posts in crawler divs for SEO
+    const discourse = doc.querySelector('.crawler-topic-body,[itemprop="articleBody"],.crawler-post');
+    if(discourse){
+      // grab their shared parent to get all posts
+      root = discourse.closest('.crawler-topic-body') || discourse.parentElement || discourse;
+      addLog('Discourse crawler content found','info');
+    } else {
+      root = doc.querySelector('main,[role="main"],article,.content,.cooked,.post-body,#content,.topic-body,.entry-content,.article-body') || doc.body;
+    }
+  } else {
+    root = doc.body;
+  }
+  if(!root) throw new Error('No content found in HTML');
+  opts._pageTitle = pageTitle;
+
+  // PDF setup (points)
+  const pageSizes={A4:[595.28,841.89],A3:[841.89,1190.55],Letter:[612,792]};
+  const [pw,ph]=pageSizes[opts.pageSize]||pageSizes.A4;
+  const M=opts.margin*MM;
+  const contentW=pw-2*M;
+  const pdf=new jsPDF({orientation:'p',unit:'pt',format:opts.pageSize.toLowerCase()});
+  let fontName='helvetica';
+
+  // RTL: embed Arabic-capable font
+  if(opts.rtl){
+    setProgress(35,'Loading Arabic font…');
+    try{
+      const fontUrl='https://cdn.jsdelivr.net/fontsource/fonts/noto-sans-arabic@latest/arabic-400-normal.ttf';
+      const res=await fetch(fontUrl,{signal:AbortSignal.timeout(15000)});
+      const buf=await res.arrayBuffer();
+      let bin='';const bytes=new Uint8Array(buf);
+      for(let i=0;i<bytes.length;i++)bin+=String.fromCharCode(bytes[i]);
+      const b64=btoa(bin);
+      pdf.addFileToVFS('NotoArabic.ttf',b64);
+      pdf.addFont('NotoArabic.ttf','NotoArabic','normal');
+      fontName='NotoArabic';
+      addLog('✓ Arabic font loaded','ok');
+    }catch(e){addLog('⚠ Arabic font failed, using default','warn');}
+  }
+
+  // Prefetch images
+  const imgMap={};
+  if(opts.images){
+    const imgs=[...root.querySelectorAll('img')];
+    const uniq=[...new Set(imgs.map(i=>i.src||i.getAttribute('src')).filter(Boolean))];
+    addLog(`Fetching ${uniq.length} images…`,'info');
+    let done=0;
+    await Promise.all(uniq.map(async src=>{
+      const data=await fetchImage(src);
+      if(data)imgMap[src]=data;
+      done++;setProgress(40+(done/Math.max(uniq.length,1))*15,`Images ${done}/${uniq.length}…`);
+    }));
+    addLog(`✓ ${Object.keys(imgMap).length}/${uniq.length} images embedded`,'ok');
+  }
+
+  setProgress(60,'Laying out text…');
+
+  let y=M;
+  const links=[];
+  function ensureSpace(h){if(y+h>ph-M-(opts.pageNums?14:0)){addFooter();pdf.addPage();y=M;}}
+  let pageNo=1;
+  function addFooter(){
+    if(opts.pageNums){pdf.setFont('helvetica','normal');pdf.setFontSize(8);pdf.setTextColor(150);
+      pdf.text(String(pageNo),pw/2,ph-12,{align:'center'});}
+    pageNo++;
+  }
+
+  function drawParagraph(runs,{size=10.5,color=[26,26,26],indent=0,gapAfter=5,bullet=null}){
+    if(!runs.length)return;
+    const maxW=contentW-indent;
+    const lines=layoutRuns(pdf,runs,maxW,size,fontName);
+    const lh=size*1.45;
+    lines.forEach((line,li)=>{
+      ensureSpace(lh);
+      let total=0;pdf.setFontSize(size);
+      const spaceW=(()=>{pdf.setFont(fontName,'normal');return pdf.getTextWidth(' ');})();
+      line.forEach((w,i)=>{total+=w.w+(i?spaceW:0);});
+      let x=opts.rtl?(M+indent+maxW-total):(M+indent);
+      // bullet
+      if(bullet&&li===0){
+        pdf.setFont(fontName,'normal');pdf.setFontSize(size);pdf.setTextColor(...color);
+        if(opts.rtl)pdf.text(bullet,M+indent+maxW+4,y);
+        else pdf.text(bullet,M+indent-10,y);
+      }
+      line.forEach((w,i)=>{
+        if(i)x+=spaceW;
+        setFontFor(pdf,w,size,fontName);
+        if(w.href&&opts.links){
+          pdf.setTextColor(17,85,204);
+          pdf.textWithLink(w.text,x,y,{url:w.href});
+          pdf.setDrawColor(17,85,204);pdf.setLineWidth(0.4);pdf.line(x,y+1.5,x+w.w,y+1.5);
+        }else{
+          pdf.setTextColor(...(w.code?[80,80,80]:color));
+          pdf.text(w.text,x,y);
+        }
+        x+=w.w;
+      });
+      y+=lh;
+    });
+    y+=gapAfter;
+  }
+
+  function drawPre(node){
+    const text=node.textContent.replace(/\t/g,'  ').replace(/\r/g,'');
+    const lines=text.split('\n');
+    const size=8.2,lh=size*1.35,pad=6;
+    pdf.setFont('courier','normal');pdf.setFontSize(size);
+    // wrap each line by char to content width
+    const maxW=contentW-2*pad;
+    const wrapped=[];
+    lines.forEach(ln=>{
+      if(pdf.getTextWidth(ln)<=maxW){wrapped.push(ln);return;}
+      let cur='';
+      for(const c of ln){
+        if(pdf.getTextWidth(cur+c)>maxW){wrapped.push(cur);cur=c;}else cur+=c;
+      }
+      wrapped.push(cur);
+    });
+    const boxH=wrapped.length*lh+2*pad;
+    ensureSpace(Math.min(boxH,ph-2*M));
+    // background box (may span pages — draw per chunk)
+    let i=0;
+    while(i<wrapped.length){
+      const avail=ph-M-(opts.pageNums?14:0)-y;
+      const rows=Math.max(1,Math.floor((avail-2*pad)/lh));
+      const chunk=wrapped.slice(i,i+rows);
+      const h=chunk.length*lh+2*pad;
+      pdf.setFillColor(245,245,245);pdf.setDrawColor(224,224,224);
+      pdf.rect(M,y,contentW,h,'FD');
+      pdf.setFont('courier','normal');pdf.setFontSize(size);pdf.setTextColor(40,40,40);
+      let ty=y+pad+size*0.9;
+      chunk.forEach(ln=>{pdf.text(ln,M+pad,ty);ty+=lh;});
+      y+=h+4;i+=rows;
+      if(i<wrapped.length){addFooter();pdf.addPage();y=M;}
+    }
+    y+=4;
+  }
+
+  async function drawImage(node){
+    const src=node.src||node.getAttribute('src');
+    const data=imgMap[src];if(!data)return;
+    try{
+      const dim=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res({w:im.naturalWidth,h:im.naturalHeight});im.onerror=rej;im.src=data;});
+      let w=dim.w*0.75,h=dim.h*0.75; // px→pt
+      if(w>contentW){const r=contentW/w;w=contentW;h=h*r;}
+      const maxH=ph-2*M-(opts.pageNums?14:0);
+      if(h>maxH){const r=maxH/h;h=maxH;w=w*r;}
+      ensureSpace(h+6);
+      const fmt=data.substring(11,data.indexOf(';')).toUpperCase().replace('JPG','JPEG');
+      const x=opts.rtl?(pw-M-w):M;
+      pdf.addImage(data,fmt==='JPEG'||fmt==='PNG'?fmt:'JPEG',x,y,w,h);
+      y+=h+8;
+    }catch(e){addLog('⚠ image skipped','warn');}
+  }
+
+  function drawTable(node){
+    const rows=[...node.querySelectorAll('tr')];
+    rows.forEach(tr=>{
+      const cells=[...tr.querySelectorAll('th,td')];
+      if(!cells.length)return;
+      const cw=contentW/cells.length;
+      const isHead=cells[0].tagName.toLowerCase()==='th';
+      const size=8.5,pad=4;
+      // measure row height (1 line per cell, simple)
+      const lh=size*1.4;
+      const cellTexts=cells.map(c=>c.textContent.replace(/\s+/g,' ').trim());
+      const wrapped=cellTexts.map(t=>{
+        pdf.setFont(fontName,isHead?'bold':'normal');pdf.setFontSize(size);
+        const words=t.split(' ');const ls=[];let cur='';
+        words.forEach(w=>{if(pdf.getTextWidth((cur?cur+' ':'')+w)>cw-2*pad&&cur){ls.push(cur);cur=w;}else cur=cur?cur+' '+w:w;});
+        if(cur)ls.push(cur);return ls.length?ls:[''];
+      });
+      const maxLines=Math.max(...wrapped.map(w=>w.length));
+      const rh=maxLines*lh+2*pad;
+      ensureSpace(rh);
+      let x=M;
+      cells.forEach((c,ci)=>{
+        pdf.setDrawColor(220,220,220);
+        if(isHead)pdf.setFillColor(240,240,240);else pdf.setFillColor(255,255,255);
+        pdf.rect(x,y,cw,rh,'FD');
+        pdf.setFont(fontName,isHead?'bold':'normal');pdf.setFontSize(size);pdf.setTextColor(40,40,40);
+        let ty=y+pad+size*0.9;
+        wrapped[ci].forEach(ln=>{pdf.text(ln,x+pad,ty);ty+=lh;});
+        x+=cw;
+      });
+      y+=rh;
+    });
+    y+=6;
+  }
+
+  // Walk
+  const tasks=[];
+  function walk(node){
+    const tag=node.tagName?node.tagName.toLowerCase():'';
+    if(['script','style','noscript','svg','nav','header','footer'].includes(tag))return;
+    if(node.nodeType===3){const t=node.textContent.trim();if(t)tasks.push({type:'p',node});return;}
+    if(tag==='img'){tasks.push({type:'img',node});return;}
+    if(tag==='hr'){tasks.push({type:'hr'});return;}
+    if(tag==='pre'){tasks.push({type:'pre',node});return;}
+    if(/^h[1-6]$/.test(tag)){tasks.push({type:tag,node});return;}
+    if(tag==='blockquote'){tasks.push({type:'quote',node});return;}
+    if(tag==='li'){tasks.push({type:'li',node});return;}
+    if(tag==='table'){tasks.push({type:'table',node});return;}
+    if(tag==='p'){tasks.push({type:'p',node});return;}
+    if(node.childNodes)node.childNodes.forEach(c=>{
+      if(c.nodeType===1)walk(c);
+      else if(c.nodeType===3&&c.textContent.trim())tasks.push({type:'p',node:c});
+    });
+  }
+  walk(root);
+
+  // Auto-recover: if almost nothing found, try progressively broader selectors
+  const textLen=tasks.reduce((s,t)=>s+(t.node?(t.node.textContent||'').length:0),0);
+  if((tasks.length<3||textLen<200)&&raw.length>5000){
+    addLog('⚠ Little content found — retrying with broader parse…','warn');
+    tasks.length=0;
+    const doc2=parser.parseFromString(raw,'text/html');
+    if(opts.srcURL){let b=doc2.querySelector('base');if(!b){b=doc2.createElement('base');doc2.head.prepend(b);}b.href=opts.srcURL;}
+    doc2.querySelectorAll('script,style,noscript').forEach(e=>e.remove());
+    // Try Discourse crawler content first
+    const crawlerBody = doc2.querySelector('.crawler-topic-body');
+    if(crawlerBody){ walk(crawlerBody); addLog('Recovery via crawler-topic-body: '+tasks.length+' blocks','info'); }
+    if(tasks.length<3){
+      tasks.length=0;
+      walk(doc2.body);
+      addLog('Recovery via full body: '+tasks.length+' blocks','info');
+    }
+  }
+
+  if(tasks.length===0){
+    throw new Error('No readable content found. For JS-heavy sites (forums, social), use URL mode — it grabs the full page automatically.');
+  }
+
+  // Source URL banner
+  if(opts.showSourceUrl&&opts.srcURL){
+    pdf.setFont(fontName,'normal');pdf.setFontSize(8.5);pdf.setTextColor(17,85,204);
+    const label='Source: '+opts.srcURL;
+    pdf.textWithLink(label,M,y,{url:opts.srcURL});
+    y+=14;pdf.setDrawColor(220,220,220);pdf.line(M,y,pw-M,y);y+=12;
+  }
+
+  const headSizes={h1:18,h2:15,h3:13,h4:12,h5:11,h6:10.5};
+  for(let k=0;k<tasks.length;k++){
+    const t=tasks[k];
+    if(t.type==='img'){await drawImage(t.node);}
+    else if(t.type==='pre'){drawPre(t.node);}
+    else if(t.type==='table'){drawTable(t.node);}
+    else if(t.type==='hr'){ensureSpace(10);pdf.setDrawColor(220,220,220);pdf.line(M,y,pw-M,y);y+=10;}
+    else if(/^h[1-6]$/.test(t.type)){
+      const runs=extractRuns(t.node).map(r=>({...r,bold:true}));
+      drawParagraph(runs,{size:headSizes[t.type],color:[20,20,20],gapAfter:6});
+    }
+    else if(t.type==='quote'){
+      const runs=extractRuns(t.node);
+      const startY=y;
+      drawParagraph(runs,{size:10.5,color:[85,85,85],indent:14,gapAfter:6});
+      pdf.setDrawColor(180,180,180);pdf.setLineWidth(2);
+      const lx=opts.rtl?(pw-M-2):(M+2);pdf.line(lx,startY-9,lx,y-6);
+    }
+    else if(t.type==='li'){
+      const runs=extractRuns(t.node);
+      drawParagraph(runs,{size:10.5,color:[26,26,26],indent:16,gapAfter:3,bullet:'•'});
+    }
+    else{
+      const runs=extractRuns(t.node);
+      drawParagraph(runs,{size:10.5,color:[26,26,26],gapAfter:6});
+    }
+    if(k%5===0)setProgress(60+(k/tasks.length)*35,`Rendering ${k}/${tasks.length}…`);
+  }
+  addFooter(); // last page number
+  return pdf;
+}
+
+async function convert(){
+  const btn=document.getElementById('convertBtn');
+  document.getElementById('log').innerHTML='';
+  document.getElementById('downloadArea').innerHTML='';
+  document.getElementById('statusCard').classList.add('visible');
+  document.getElementById('spinner').style.display='';
+  btn.disabled=true;
+  try{
+    let raw='',srcURL='';
+    setProgress(10,'Loading content…');
+    if(currentTab==='url'){
+      srcURL=document.getElementById('urlInput').value.trim();
+      if(!srcURL)throw new Error('Enter a URL');
+      addLog('Fetching: '+srcURL,'info');raw=await fetchURL(srcURL);
+    }else{
+      if(!htmlContent)throw new Error('Select an HTML file first');
+      raw=htmlContent;srcURL=document.getElementById('fileSourceUrl').value.trim();
+      addLog(`✓ File loaded (${Math.round(raw.length/1024)} KB)`,'ok');
+    }
+    setProgress(30,'Processing…');
+    const opts={
+      pageSize:document.getElementById('pageSize').value,
+      margin:parseInt(document.getElementById('margins').value),
+      mode:document.getElementById('contentMode').value,
+      rtl:document.getElementById('direction').value==='rtl',
+      images:document.getElementById('chkImages').checked,
+      links:document.getElementById('chkLinks').checked,
+      showSourceUrl:document.getElementById('chkSourceUrl').checked,
+      pageNums:document.getElementById('chkPageNums').checked,
+      srcURL
+    };
+    const pdf=await buildPDF(raw,opts);
+    setProgress(100,'Done!');
+    document.getElementById('spinner').style.display='none';
+    addLog('✓ PDF ready (selectable text)','ok');
+    const url=URL.createObjectURL(pdf.output('blob'));
+
+    // Build Windows-safe filename
+    function safeName(s){
+      return s
+        .replace(/[<>:"/\\|?*]/g,'')   // remove Windows reserved chars
+        .replace(/[\x00-\x1f]/g,'')     // remove control chars
+        .replace(/\s+/g,' ')             // collapse whitespace
+        .replace(/^[. ]+|[. ]+$/g,'')    // strip leading/trailing dots & spaces
+        .slice(0,120)                     // max 120 chars (leaving room for .pdf)
+        || 'document';
+    }
+
+    const customName = document.getElementById('customName').value.trim();
+    let baseName;
+    if(customName){
+      baseName = safeName(customName);
+    } else if(opts._pageTitle){
+      baseName = safeName(opts._pageTitle);
+    } else if(currentTab==='url' && srcURL){
+      // fallback: slug from URL
+      baseName = safeName(srcURL.split('/').filter(Boolean).pop().replace(/[?#].*/,'').replace(/-/g,' '));
+    } else {
+      baseName = 'converted';
+    }
+    const name = baseName + '.pdf';
+    addLog('Filename: ' + name, 'info');
+
+    document.getElementById('downloadArea').innerHTML=
+      `<a class="download-btn" href="${url}" download="${name}">⬇️ Download PDF</a>
+       <p class="note">✅ Selectable text · ${opts.images?'images · ':''}${opts.links?'clickable links · ':''}${opts.rtl?'RTL':'LTR'}<br>📄 <b>${name}</b></p>`;
+  }catch(e){
+    setProgress(0,'Error');document.getElementById('spinner').style.display='none';
+    addLog('✗ '+e.message,'err');console.error(e);
+  }
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Abdullah Alshenaifi — Electronics Engineer. Embedded systems, IoT, PCB design, robotics, and 3D printing." />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self'; connect-src 'self' https://formspree.io https://aashenaifi.netlify.app; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self' https://p3d.in https://drive.google.com https://*.netlify.app; connect-src 'self' https://formspree.io https://aashenaifi.netlify.app; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
 <title>Abdullah Alshenaifi — Electronics Engineer</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%2380519F'>A</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -263,6 +263,26 @@ model-viewer:active{cursor:grabbing}
 .badge.wip{color:var(--blue);background:rgba(10,132,255,.08);border:1px solid rgba(10,132,255,.22)}
 .tools-note{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-3);margin-top:18px;
   padding:12px 16px;border-inline-start:2px solid rgba(212,175,55,.4);background:rgba(212,175,55,.03);border-radius:0 8px 8px 0}
+.card.clickable{cursor:pointer}
+
+/* ───────────────── PROJECT DETAIL MODAL ───────────────── */
+.proj-modal{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:24px;
+  background:rgba(10,8,14,.82);backdrop-filter:blur(6px)}
+.proj-modal.open{display:flex}
+.proj-modal-box{position:relative;max-width:720px;width:100%;max-height:86vh;overflow-y:auto;
+  border:1px solid var(--line);border-radius:18px;background:#16121d;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.proj-modal-close{position:absolute;top:16px;inset-inline-end:16px;width:34px;height:34px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.03);border:1px solid var(--line);
+  color:var(--t-3);cursor:pointer;transition:.2s}
+.proj-modal-close:hover{color:var(--lav-light);border-color:rgba(128,81,159,.35);background:rgba(128,81,159,.1)}
+.proj-modal-box h3{font-size:22px;font-weight:700;margin:0 40px 6px 0;letter-spacing:-.01em}
+.proj-modal-box .date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-3);margin-bottom:16px}
+.proj-modal-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:18px}
+.proj-modal-gallery img{width:100%;height:110px;object-fit:cover;border-radius:10px;border:1px solid var(--line);cursor:pointer;transition:.2s}
+.proj-modal-gallery img:hover{border-color:rgba(128,81,159,.4);transform:scale(1.02)}
+.proj-modal-box p{font-size:14.5px;color:var(--t-2);font-weight:300;margin-bottom:18px;line-height:1.8}
+.proj-embed{margin-bottom:18px;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.proj-embed iframe{width:100%;height:420px;display:block;border:0;background:#0d0a12}
 
 /* ───────────────── FORM ───────────────── */
 form{display:flex;flex-direction:column;gap:18px}
@@ -337,6 +357,21 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
 </style>
 </head>
 <body class="locked">
+<script>
+  // Detect this deployment's base path (e.g. "" at a domain root, or
+  // "/aashenaifiWebsite.github.io" when served under a GitHub project-site
+  // prefix), then restore the real deep-link path stashed by 404.html
+  // before the router runs.
+  (function(){
+    window.APP_BASE = location.pathname.replace(/\/index\.html$/i,"").replace(/\/+$/,"");
+    var p = sessionStorage.getItem("redirectPath");
+    if(p){
+      sessionStorage.removeItem("redirectPath");
+      var target = window.APP_BASE + p;
+      if(target !== location.pathname + location.search + location.hash) history.replaceState(null, "", target);
+    }
+  })();
+</script>
 
 <!-- BACKGROUND -->
 <div class="bg-fixed">
@@ -496,6 +531,16 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
       <div class="cards" id="projGrid" style="margin-top:36px"></div>
     </div>
   </section>
+
+  <!-- ───────── PROJECT DETAIL MODAL ───────── -->
+  <div class="proj-modal" id="projModal">
+    <div class="proj-modal-box" role="dialog" aria-modal="true">
+      <div class="proj-modal-close" id="projModalClose" title="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </div>
+      <div id="projModalBody"></div>
+    </div>
+  </div>
 
   <!-- ───────── AI TOOLS ───────── -->
   <section id="tools">
@@ -714,9 +759,15 @@ const $$ = s => document.querySelectorAll(s);
 function L(k){ return T[lang][k] ?? T.en[k] ?? k; }
 
 /* Escape any content.json-sourced text before it enters innerHTML, and
-   allow only http(s) URLs in hrefs (blocks javascript:/data: injection). */
+   allow only http(s) URLs or same-site relative paths in hrefs (blocks
+   javascript:/data:/protocol-relative injection). */
 const esc = s => String(s??"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "#";
+const safeUrl = u => {
+  u = String(u??"");
+  if(/^https?:\/\//i.test(u)) return u;
+  if(!u.startsWith("//") && !/:/.test(u)) return u;
+  return "#";
+};
 
 const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
@@ -734,24 +785,70 @@ function renderTimeline(){
 function renderSkills(){
   $("#skills").innerHTML = SKILLS.filter(s=>s.visible!==false).map(s=>`<span class="skill">${esc(lang==="ar"?s.ar:s.en)}</span>`).join("");
 }
+const slugify = s => String(s||"").toLowerCase().trim().replace(/[^\w\s-]/g,"").replace(/[\s_]+/g,"-").replace(/^-+|-+$/g,"");
+const projectSlug = p => slugify(p.titleEn);
+
 function renderProjects(){
   $("#projGrid").innerHTML = PROJECTS.filter(p=>p.visible!==false).map((p,i)=>{
     const title=esc(lang==="ar"?p.titleAr:p.titleEn), desc=esc(lang==="ar"?p.descAr:p.descEn);
     const tags=(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-    const link=p.url?`<div class="links"><a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a></div>`:"";
-    return `<div class="card"><div class="corner"></div><div class="pnum">P${String(i+1).padStart(2,"0")}</div>
+    const link=p.url?`<div class="links"><a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}" onclick="event.stopPropagation()">${arrowSvg}</a></div>`:"";
+    return `<div class="card clickable" data-proj-idx="${i}"><div class="corner"></div><div class="pnum">P${String(i+1).padStart(2,"0")}</div>
       <h3>${title}</h3><div class="date">${esc(p.date)}</div><p>${desc}</p><div class="tags">${tags}</div>${link}</div>`;
   }).join("");
+  $$("#projGrid .card[data-proj-idx]").forEach(c=>c.onclick=()=>openProjectDetail(+c.dataset.projIdx,true));
 }
+function openProjectDetail(i,push){
+  const p=PROJECTS.filter(p=>p.visible!==false)[i];
+  if(!p) return;
+  const title=esc(lang==="ar"?p.titleAr:p.titleEn), desc=esc(lang==="ar"?p.descAr:p.descEn);
+  const tags=(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+  const imgs=(p.images||[]).filter(u=>/^https?:\/\//i.test(u||""));
+  const gallery=imgs.length?`<div class="proj-modal-gallery">${imgs.map(u=>`<img src="${esc(u)}" alt="${title}" loading="lazy">`).join("")}</div>`:"";
+  const embed=p.embed3d?`<div class="proj-embed"><iframe src="${esc(p.embed3d)}" loading="lazy" allowfullscreen></iframe></div>`:"";
+  const link=p.url?`<a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a>`:"";
+  const drive=p.driveUrl?`<a class="btn" href="${safeUrl(p.driveUrl)}" target="_blank" rel="noopener">📁 Files (code / pics / videos)</a>`:"";
+  $("#projModalBody").innerHTML=`<h3>${title}</h3><div class="date">${esc(p.date)}</div>${gallery}${embed}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${link}${drive}</div>`;
+  $("#projModalBody").querySelectorAll(".proj-modal-gallery img").forEach(img=>img.onclick=()=>window.open(img.src,"_blank","noopener"));
+  $("#projModal").classList.add("open");
+  if(push) history.pushState(null,"",window.APP_BASE+"/projects/"+projectSlug(p));
+}
+function closeDetailModal(push){
+  $("#projModal").classList.remove("open");
+  $("#projModalBody").innerHTML="";
+  if(push!==false && /^\/projects\//i.test(currentPath())) history.pushState(null,"",window.APP_BASE+"/");
+}
+$("#projModalClose").onclick=()=>closeDetailModal(true);
+$("#projModal").onclick=e=>{ if(e.target.id==="projModal") closeDetailModal(true); };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#projModal").classList.contains("open")) closeDetailModal(true); });
+
+function currentPath(){
+  var raw = location.pathname.replace(/\/index\.html$/i,"");
+  if(window.APP_BASE && raw.indexOf(window.APP_BASE)===0) raw = raw.slice(window.APP_BASE.length);
+  return raw.replace(/\/+$/,"") || "/";
+}
+function route(){
+  const path=currentPath();
+  const mProj=path.match(/^\/projects\/([^/]+)$/i);
+  if(mProj){
+    const list=PROJECTS.filter(p=>p.visible!==false);
+    const idx=list.findIndex(p=>projectSlug(p)===mProj[1]);
+    if(idx>=0){ openProjectDetail(idx,false); return; }
+  }
+  closeDetailModal(false);
+}
+window.addEventListener("popstate",route);
+
 function renderTools(){
   $("#toolsGrid").innerHTML = TOOLS.filter(t=>t.visible!==false).map((t,i)=>{
     const title=esc(lang==="ar"?t.titleAr:t.titleEn), desc=esc(lang==="ar"?t.descAr:t.descEn);
     const tags=(t.tags||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("");
     const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
-    return `<div class="card"><div class="corner"></div><div class="pnum">T${String(i+1).padStart(2,"0")}</div>${badge}
+    return `<div class="card clickable" data-tool-idx="${i}"><div class="corner"></div><div class="pnum">T${String(i+1).padStart(2,"0")}</div>${badge}
       <h3>${title}</h3><p style="margin-top:8px">${desc}</p><div class="tags">${tags}</div>
-      <div class="links"><a class="icbtn" href="${safeUrl(t.url)}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a></div></div>`;
+      <div class="links"><a class="icbtn" href="${safeUrl(t.url)}" title="${L('visit')}" onclick="event.stopPropagation()">${arrowSvg}</a></div></div>`;
   }).join("");
+  $$("#toolsGrid .card[data-tool-idx]").forEach((c,i)=>c.onclick=()=>{ location.href=safeUrl(TOOLS.filter(t=>t.visible!==false)[i].url); });
 }
 function renderSocials(){
   $("#socials").innerHTML = SOCIALS.filter(s=>s.visible!==false).map(s=>{
@@ -1058,6 +1155,7 @@ async function loadContent(){
   renderAll();
   scope();
   recolorLogo();
+  route();
 })();
 $("#year").textContent=new Date().getFullYear();
 $("#langBtn").onclick=()=>setLang(lang==="en"?"ar":"en");
