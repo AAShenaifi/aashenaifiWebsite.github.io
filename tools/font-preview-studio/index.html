@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Font Preview Studio v4</title>
+<style>
+:root{--bg:#0a0a0f;--bg2:#0f0f18;--bg3:#141420;--b:#1e1e30;--b2:#2a2a40;--ac:#80519f;--ac2:#a87fc4;--cy:#6bfffd;--tx:#e8e8f0;--tx2:#8888aa;--red:#ff4466;--gr:#00ffaa;--pw:290px;--r:11px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'Segoe UI',system-ui,sans-serif;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.topbar{height:50px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0}
+.logo{font-size:13px;font-weight:700;background:linear-gradient(135deg,var(--ac),var(--cy));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap}
+.sep{width:1px;height:20px;background:var(--b2)}
+.badge{font-size:10px;color:var(--tx2);padding:2px 7px;background:var(--bg3);border-radius:20px;border:1px solid var(--b2);white-space:nowrap}
+.badge.ok{border-color:var(--gr);color:var(--gr)}
+.badge.warn{border-color:#ffaa00;color:#ffaa00}
+.badge.dr{border-color:#4285f4;color:#4285f4}
+.sp{flex:1}
+.btn{padding:5px 11px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;transition:all .16s;white-space:nowrap}
+.ghost{background:var(--bg3);color:var(--tx2);border:1px solid var(--b2)}
+.ghost:hover{border-color:var(--ac);color:var(--tx)}
+.prim{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff}
+.prim:hover{opacity:.9}
+.cy-btn{background:rgba(107,255,253,.09);color:var(--cy);border:1px solid rgba(107,255,253,.2)}
+.cy-btn:hover{background:rgba(107,255,253,.16)}
+.dr-btn{background:rgba(66,133,244,.1);color:#4285f4;border:1px solid rgba(66,133,244,.25)}
+.dr-btn:hover{background:rgba(66,133,244,.18)}
+.main{display:flex;flex:1;overflow:hidden}
+/* LEFT PANEL */
+.fp{width:var(--pw);background:var(--bg2);border-left:1px solid var(--b);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.phdr{padding:9px 9px 6px;border-bottom:1px solid var(--b);flex-shrink:0;display:flex;flex-direction:column;gap:6px}
+.ptitle{font-size:9px;color:var(--tx2);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.sw{position:relative}
+.sw input{width:100%;background:var(--bg3);border:1px solid var(--b2);color:var(--tx);padding:5px 9px 5px 24px;border-radius:6px;font-size:11px;outline:none;transition:border-color .2s;direction:ltr}
+.sw input:focus{border-color:var(--ac)}
+.si{position:absolute;left:7px;top:50%;transform:translateY(-50%);color:var(--tx2);font-size:10px;pointer-events:none}
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--b);flex-shrink:0}
+.tab{flex:1;padding:7px 4px;text-align:center;font-size:10px;cursor:pointer;color:var(--tx2);transition:all .13s;border-bottom:2px solid transparent;font-weight:600}
+.tab:hover{color:var(--tx)}
+.tab.on{color:var(--cy);border-bottom-color:var(--ac)}
+/* UPLOAD */
+.uz{margin:6px 6px 0;padding:9px 7px;border:2px dashed var(--b2);border-radius:8px;text-align:center;cursor:pointer;transition:all .18s;flex-shrink:0}
+.uz:hover{border-color:var(--ac);background:rgba(128,81,159,.04)}
+.uz.drag{border-color:var(--cy)}
+.uz.loaded{border-color:var(--gr);background:rgba(0,255,170,.03)}
+.uzi{font-size:16px;margin-bottom:2px}
+.uzt{font-size:9px;color:var(--tx2);line-height:1.5}
+.uzt strong{color:var(--tx)}
+.uzp{margin-top:4px;height:3px;background:var(--b);border-radius:3px;overflow:hidden;display:none}
+.uzbar{height:100%;background:linear-gradient(90deg,var(--ac),var(--cy));width:0%;transition:width .15s}
+#fi{display:none}
+/* DRIVE STATUS */
+.dr-panel{margin:5px 6px 0;background:rgba(66,133,244,.07);border:1px solid rgba(66,133,244,.2);border-radius:8px;padding:8px 9px;flex-shrink:0}
+.dr-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.dr-row:last-child{margin-bottom:0}
+.dr-ico{font-size:14px}
+.dr-lbl{font-size:10px;color:#4285f4;font-weight:600;flex:1}
+.dr-stat{font-size:9px;color:var(--tx2);line-height:1.4;margin-bottom:5px}
+.dr-btns{display:flex;gap:4px}
+.dr-micro{flex:1;padding:3px 6px;border-radius:5px;font-size:9px;font-weight:600;cursor:pointer;border:1px solid rgba(66,133,244,.3);background:rgba(66,133,244,.08);color:#4285f4;transition:all .13s}
+.dr-micro:hover{background:rgba(66,133,244,.16)}
+.dr-micro.gr{border-color:rgba(0,255,170,.3);background:rgba(0,255,170,.06);color:var(--gr)}
+.dr-micro:disabled{opacity:.4;cursor:not-allowed}
+/* FONT LIST */
+.fl{flex:1;overflow-y:auto;padding:3px 5px 5px}
+.fl::-webkit-scrollbar{width:3px}
+.fl::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.fi{padding:6px 8px;border-radius:7px;cursor:pointer;transition:all .12s;margin-bottom:2px;border:1px solid transparent}
+.fi:hover{background:var(--bg3);border-color:var(--b2)}
+.fi.active{background:rgba(128,81,159,.14);border-color:rgba(128,81,159,.38)}
+.fi.ok .fn::after{content:'✓';color:var(--gr);font-size:8px;margin-right:2px}
+.fi.miss .fn{opacity:.35}
+.fi.user .fn::before{content:'★ ';color:#ffaa00;font-size:9px}
+.fi.dr-loaded .fn::before{content:'☁ ';color:#4285f4;font-size:9px}
+.fn{font-size:11px;color:var(--tx);line-height:1.3}
+.ff{font-size:9px;color:var(--tx2);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr}
+.fi.active .fn{color:var(--cy)}
+/* CENTER */
+.pa{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.ts{padding:9px 15px;border-bottom:1px solid var(--b);flex-shrink:0;background:var(--bg2)}
+.tlbl{font-size:9px;color:var(--tx2);margin-bottom:4px;text-align:right}
+.tf{width:100%;background:var(--bg3);border:1px solid var(--b2);color:var(--tx);padding:7px 10px;border-radius:7px;font-size:13px;outline:none;resize:none;min-height:48px;transition:border-color .2s;font-family:inherit;line-height:1.6}
+.tf:focus{border-color:var(--ac)}
+.cw{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:22px;position:relative}
+.gbg{position:absolute;inset:0;background-image:linear-gradient(rgba(128,81,159,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(128,81,159,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+#pbox{position:relative;z-index:1;display:inline-block;transition:all .2s;max-width:92%}
+#ptxt{transition:all .18s;word-break:break-word;white-space:pre-wrap;display:block}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--tx2);text-align:center;padding:28px}
+.empty .ei{font-size:36px;opacity:.3}
+.empty p{font-size:11px;line-height:1.6}
+/* RIGHT PANEL */
+.cp{width:235px;background:var(--bg2);border-right:1px solid var(--b);overflow-y:auto;padding:9px;flex-shrink:0;display:flex;flex-direction:column;gap:9px}
+.cp::-webkit-scrollbar{width:3px}
+.cp::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+.cs{background:var(--bg3);border:1px solid var(--b);border-radius:var(--r);padding:8px 9px}
+.ct{font-size:9px;color:var(--ac);text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:7px;display:flex;align-items:center;gap:4px}
+.ct::after{content:'';flex:1;height:1px;background:var(--b2)}
+.cr{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:5px}
+.cr:last-child{margin-bottom:0}
+.cl{font-size:9px;color:var(--tx2);flex-shrink:0;min-width:50px}
+.cr2{-webkit-appearance:none;width:100%;height:3px;background:var(--b2);border-radius:3px;outline:none;cursor:pointer}
+.cr2::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--ac);cursor:pointer}
+.rv{font-size:9px;color:var(--cy);min-width:28px;text-align:left;flex-shrink:0}
+.csel{background:var(--bg2);border:1px solid var(--b2);color:var(--tx);border-radius:5px;padding:3px 5px;font-size:10px;outline:none;cursor:pointer;width:100%;direction:ltr}
+.csel:focus{border-color:var(--ac)}
+.clrw{display:flex;align-items:center;gap:5px;margin-bottom:7px}
+.clrw:last-child{margin-bottom:0}
+.cll{font-size:9px;color:var(--tx2);flex:1}
+.cpk{width:28px;height:22px;border:1px solid var(--b2);border-radius:4px;cursor:pointer;background:none;padding:1px}
+.chx{background:var(--bg2);border:1px solid var(--b2);color:var(--tx);padding:2px 4px;border-radius:4px;font-size:9px;width:60px;outline:none;direction:ltr;font-family:monospace}
+.chx:focus{border-color:var(--ac)}
+.tbr{display:flex;gap:3px;flex-wrap:wrap}
+.tb{padding:3px 7px;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;border:1px solid var(--b2);background:var(--bg2);color:var(--tx2);transition:all .12s}
+.tb:hover{border-color:var(--ac);color:var(--tx)}
+.tb.on{background:rgba(128,81,159,.18);border-color:var(--ac);color:var(--cy)}
+.abr{display:flex;gap:3px}
+.ab{flex:1;padding:4px;border-radius:4px;border:1px solid var(--b2);background:var(--bg2);color:var(--tx2);cursor:pointer;font-size:11px;transition:all .12s;text-align:center}
+.ab:hover{border-color:var(--ac)}
+.ab.on{background:rgba(128,81,159,.18);border-color:var(--ac);color:var(--cy)}
+.bsb{flex:1;min-width:38px;padding:3px 4px;font-size:9px;border-radius:4px;border:1px solid var(--b2);background:var(--bg2);color:var(--tx2);cursor:pointer;transition:all .12s;text-align:center}
+.bsb:hover{border-color:var(--ac)}
+.bsb.on{background:rgba(128,81,159,.18);border-color:var(--ac);color:var(--cy)}
+.cfb{display:flex;align-items:center;gap:6px;background:rgba(128,81,159,.09);border:1px solid rgba(128,81,159,.26);border-radius:7px;padding:5px 8px}
+.cfd{width:6px;height:6px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.cfn{font-size:10px;color:var(--cy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ew{position:relative}
+.em{position:absolute;top:calc(100% + 5px);left:0;background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:4px;z-index:50;min-width:140px;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.em.open{display:block}
+.ei2{padding:6px 9px;border-radius:4px;cursor:pointer;font-size:10px;color:var(--tx);transition:background .12s;display:flex;align-items:center;gap:6px}
+.ei2:hover{background:rgba(128,81,159,.12)}
+.ext{color:var(--tx2);font-size:8px}
+.sb{height:23px;background:var(--bg2);border-top:1px solid var(--b);display:flex;align-items:center;padding:0 11px;gap:11px;font-size:9px;color:var(--tx2);flex-shrink:0}
+.sd{width:4px;height:4px;border-radius:50%;background:var(--gr)}
+.sd.c{background:var(--cy)}
+.sd.b{background:#4285f4}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--bg3);border:1px solid var(--b2);color:var(--tx);padding:7px 15px;border-radius:7px;font-size:11px;z-index:200;transition:transform .25s;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok{border-color:var(--gr);color:var(--gr)}
+.toast.err{border-color:var(--red);color:var(--red)}
+.toast.dr{border-color:#4285f4;color:#4285f4}
+.banner{background:rgba(128,81,159,.09);border-bottom:1px solid rgba(128,81,159,.25);padding:5px 11px;font-size:10px;color:var(--tx);display:flex;align-items:center;gap:7px;flex-shrink:0}
+.banner button{background:var(--ac);color:#fff;border:none;padding:3px 9px;border-radius:5px;font-size:9px;font-weight:700;cursor:pointer}
+.banner.hidden{display:none}
+.spin{display:inline-block;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.backbar{height:26px;background:var(--bg2);border-bottom:1px solid var(--b);display:flex;align-items:center;
+  padding:0 12px;gap:8px;flex-shrink:0;font-size:10px;letter-spacing:.04em;color:var(--tx2);direction:ltr}
+.backbar a{color:var(--ac2);text-decoration:none}
+.backbar a:hover{opacity:.75}
+</style>
+</head>
+<body>
+
+<div class="backbar"><a href="../../index.html">← Abdullah Alshenaifi</a><span>/ tools / font-preview-studio</span></div>
+<div class="topbar">
+  <div class="logo">🎨 Font Preview Studio</div>
+  <div class="sep"></div>
+  <div class="badge" id="dbBadge">⏳ تحميل...</div>
+  <div class="badge dr hidden" id="drBadge">☁ Drive</div>
+  <div class="badge" id="fcBadge">437 خط</div>
+  <div class="sp"></div>
+  <div style="display:flex;gap:4px">
+    <div class="ew" id="ew">
+      <button class="btn cy-btn" onclick="toggleEM()">⬇ تصدير</button>
+      <div class="em" id="em">
+        <div class="ei2" onclick="exportAs('svg')">📐 SVG <span class="ext">مضمّن الخط</span></div>
+        <div class="ei2" onclick="exportAs('png')">🖼 PNG <span class="ext">شفاف</span></div>
+        <div class="ei2" onclick="exportAs('jpg')">📷 JPEG</div>
+      </div>
+    </div>
+    <button class="btn ghost" onclick="copyCSS()">📋 CSS</button>
+    <button class="btn prim" onclick="clearDB()">🗑</button>
+  </div>
+</div>
+
+<div class="banner hidden" id="banner">
+  <span>👆 ارفع الـ ZIP مرة وحدة أو تزامن من Drive</span>
+  <button onclick="document.getElementById('fi').click()">رفع ZIP</button>
+</div>
+
+<div class="main">
+<!-- ═══ LEFT ═══ -->
+<div class="fp">
+  <div class="phdr">
+    <div class="ptitle">مكتبة الخطوط (<span id="lc">0</span> محمّل)</div>
+    <div class="sw"><span class="si">🔍</span>
+      <input type="text" id="fsearch" placeholder="ابحث..." oninput="filterFonts(this.value)">
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab on" id="tab-installed"  onclick="switchTab('installed')">📦 الأصلية</div>
+    <div class="tab"    id="tab-uploaded"   onclick="switchTab('uploaded')">☁ مرفوعة</div>
+    <div class="tab"    id="tab-local"      onclick="switchTab('local')">💻 محلية</div>
+  </div>
+
+  <!-- DRIVE PANEL -->
+  <div class="dr-panel">
+    <div class="dr-row">
+      <span class="dr-ico">☁</span>
+      <span class="dr-lbl">Google Drive</span>
+      <span id="drOnlineBadge" class="badge" style="font-size:9px">—</span>
+    </div>
+    <div class="dr-stat" id="drStat">يتصل بـ Drive تلقائياً...</div>
+    <div class="dr-btns">
+      <button class="dr-micro" id="btnSyncInstalled" onclick="syncDriveFolder('installed')" disabled>
+        ⬇ تزامن الأصلية
+      </button>
+      <button class="dr-micro gr" id="btnUploadFont" onclick="uploadSelectedToDrive()" disabled>
+        ⬆ رفع خط لـ Drive
+      </button>
+    </div>
+  </div>
+
+  <!-- LOCAL UPLOAD -->
+  <div class="uz" id="uz" onclick="document.getElementById('fi').click()"
+       ondragover="oDO(event)" ondragleave="oDL()" ondrop="oDD(event)">
+    <div class="uzi" id="uzi">📁</div>
+    <div class="uzt" id="uzt"><strong>ZIP أو خطوط مفردة</strong><br>TTF · OTF · WOFF · WOFF2</div>
+    <div class="uzp" id="uzp"><div class="uzbar" id="uzb"></div></div>
+    <input type="file" id="fi" accept=".ttf,.otf,.woff,.woff2,.zip,.TTF,.OTF" multiple onchange="handleFiles(this.files)">
+  </div>
+
+  <div class="fl" id="fl"></div>
+</div>
+
+<!-- ═══ CENTER ═══ -->
+<div class="pa">
+  <div class="ts">
+    <div class="tlbl">النص — عربي · إنجليزي · جميع اللغات</div>
+    <textarea class="tf" id="ptxt-in" oninput="updatePreview()">عبدالله</textarea>
+  </div>
+  <div class="cw" id="cw">
+    <div class="gbg"></div>
+    <div id="pbox">
+      <div class="empty"><div class="ei">🔤</div><p>اختر خطاً<br>أو تزامن من Drive</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RIGHT ═══ -->
+<div class="cp">
+  <div class="cfb" id="cfb" style="display:none">
+    <div class="cfd"></div>
+    <div class="cfn" id="cfn">—</div>
+  </div>
+
+  <div class="cs">
+    <div class="ct">الطباعة</div>
+    <div class="cr"><span class="cl">الحجم</span>
+      <input type="range" class="cr2" id="fs" min="8" max="250" value="120" oninput="updatePreview();document.getElementById('fsv').textContent=this.value+'px'">
+      <span class="rv" id="fsv">120px</span>
+    </div>
+    <div class="cr"><span class="cl">السُمك</span>
+      <select class="csel" id="fw" onchange="updatePreview()">
+        <option value="100">100 Thin</option><option value="200">200 ExtraLight</option>
+        <option value="300">300 Light</option><option value="400" selected>400 Regular</option>
+        <option value="500">500 Medium</option><option value="600">600 SemiBold</option>
+        <option value="700">700 Bold</option><option value="800">800 ExtraBold</option>
+        <option value="900">900 Black</option>
+      </select>
+    </div>
+    <div class="cr"><span class="cl">الأسلوب</span>
+      <div class="tbr">
+        <button class="tb" id="ib" onclick="tog('italic')">I</button>
+        <button class="tb" id="ub" onclick="tog('underline')">U̲</button>
+        <button class="tb" id="sb2" onclick="tog('strike')">S̶</button>
+      </div>
+    </div>
+    <div><div class="cl" style="margin-bottom:4px">المحاذاة</div>
+      <div class="abr">
+        <button class="ab" data-a="right"   onclick="setA('right')">⇤</button>
+        <button class="ab on" data-a="center" onclick="setA('center')">⇔</button>
+        <button class="ab" data-a="left"    onclick="setA('left')">⇥</button>
+        <button class="ab" data-a="justify" onclick="setA('justify')">≡</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cs">
+    <div class="ct">المسافات</div>
+    <div class="cr"><span class="cl">تباعد الحروف</span>
+      <input type="range" class="cr2" id="ls" min="-10" max="50" value="0" step="0.5" oninput="updatePreview();document.getElementById('lsv').textContent=this.value+'px'">
+      <span class="rv" id="lsv">0px</span>
+    </div>
+    <div class="cr"><span class="cl">ارتفاع السطر</span>
+      <input type="range" class="cr2" id="lh" min="0.8" max="4" value="1.3" step="0.05" oninput="updatePreview();document.getElementById('lhv').textContent=this.value">
+      <span class="rv" id="lhv">1.3</span>
+    </div>
+    <div class="cr"><span class="cl">الدوران</span>
+      <input type="range" class="cr2" id="rot" min="-180" max="180" value="0" oninput="updatePreview();document.getElementById('rv2').textContent=this.value+'°'">
+      <span class="rv" id="rv2">0°</span>
+    </div>
+  </div>
+
+  <div class="cs">
+    <div class="ct">الألوان</div>
+    <div class="clrw"><span class="cll">النص</span>
+      <input type="color" class="cpk" id="tcp" value="#ffffff" oninput="sc('tc',this.value)">
+      <input type="text"  class="chx" id="tch" value="#ffffff" oninput="sh('tc',this.value)">
+    </div>
+    <div class="clrw"><span class="cll">الخلفية</span>
+      <input type="color" class="cpk" id="bgp" value="#c1a4a4" oninput="sc('bg',this.value)">
+      <input type="text"  class="chx" id="bgh" value="#c1a4a4" oninput="sh('bg',this.value)">
+    </div>
+    <div class="clrw"><span class="cll">الحدود</span>
+      <input type="color" class="cpk" id="bcp" value="#1e1e30" oninput="sc('bc',this.value)">
+      <input type="text"  class="chx" id="bch" value="#1e1e30" oninput="sh('bc',this.value)">
+    </div>
+    <div style="margin-top:6px"><div class="cl" style="margin-bottom:3px">ثيمات</div>
+      <div class="tbr">
+        <button class="bsb" onclick="aT('#fff','#000','#333')">⬛</button>
+        <button class="bsb" onclick="aT('#111','#fff','#ccc')">⬜</button>
+        <button class="bsb" onclick="aT('#6bfffd','#0a0a0f','#4e00f4')">💎</button>
+        <button class="bsb" onclick="aT('#ffd700','#120c00','#8b6')">🌟</button>
+        <button class="bsb" onclick="aT('#ff6b6b','#0f0008','#4a0')">❤</button>
+        <button class="bsb" onclick="aT('#fff','#c1a4a4','#9a8')">🌸</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cs">
+    <div class="ct">الإطار</div>
+    <div class="cr"><span class="cl">هامش %</span>
+      <input type="range" class="cr2" id="padp" min="5" max="80" value="18" oninput="updatePreview();document.getElementById('ppv').textContent=this.value+'%'">
+      <span class="rv" id="ppv">18%</span>
+    </div>
+    <div class="cr"><span class="cl">سُمك الحدود</span>
+      <input type="range" class="cr2" id="bw" min="0" max="20" value="0" oninput="updatePreview();document.getElementById('bwv').textContent=this.value+'px'">
+      <span class="rv" id="bwv">0px</span>
+    </div>
+    <div class="cr"><span class="cl">انحناء</span>
+      <input type="range" class="cr2" id="br" min="0" max="80" value="16" oninput="updatePreview();document.getElementById('brv').textContent=this.value+'px'">
+      <span class="rv" id="brv">16px</span>
+    </div>
+    <div style="margin-bottom:6px"><div class="cl" style="margin-bottom:3px">نوع الحدود</div>
+      <div class="tbr">
+        <button class="bsb on" data-bs="none"   onclick="setBS('none')">بلا</button>
+        <button class="bsb"    data-bs="solid"  onclick="setBS('solid')">━</button>
+        <button class="bsb"    data-bs="dashed" onclick="setBS('dashed')">╌</button>
+        <button class="bsb"    data-bs="dotted" onclick="setBS('dotted')">···</button>
+        <button class="bsb"    data-bs="double" onclick="setBS('double')">═</button>
+      </div>
+    </div>
+    <div class="cr"><span class="cl">ظل النص</span>
+      <input type="range" class="cr2" id="ts2" min="0" max="30" value="0" oninput="updatePreview();document.getElementById('tsv').textContent=this.value+'px'">
+      <span class="rv" id="tsv">0px</span>
+    </div>
+    <div class="cr"><span class="cl">توهج</span>
+      <input type="range" class="cr2" id="gl" min="0" max="50" value="0" oninput="updatePreview();document.getElementById('glv').textContent=this.value+'px'">
+      <span class="rv" id="glv">0px</span>
+    </div>
+  </div>
+
+  <div class="cs">
+    <div class="ct">تأثيرات</div>
+    <div class="tbr">
+      <button class="tb" id="gradientBtn" onclick="tFX('gradient')">🌈 تدرج</button>
+      <button class="tb" id="outlineBtn"  onclick="tFX('outline')">⭕ محيط</button>
+      <button class="tb" id="neonBtn"     onclick="tFX('neon')">⚡ نيون</button>
+      <button class="tb" id="blurBtn"     onclick="tFX('blur')">💨 ضبابي</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="sb">
+  <div class="sd"></div><span id="stf">لا يوجد خط</span>
+  <div class="sd c"></div><span id="sts">120px</span>
+  <span id="stc">0 حرف</span>
+  <div class="sp"></div>
+  <div class="sd b" id="drDot" style="background:var(--tx2)"></div>
+  <span id="stdb">Drive: غير متصل</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const FONT_CATALOG=[
+  {"file": "Adobe Arabic Bold - [UrduFonts.com].otf", "name": "Adobe Arabic Bold"},
+  {"file": "Adobe Arabic Bold Italic - [UrduFonts.com].otf", "name": "Adobe Arabic Bold Italic"},
+  {"file": "Adobe Arabic Italic - [UrduFonts.com].otf", "name": "Adobe Arabic Italic"},
+  {"file": "Adobe Arabic Regular - [UrduFonts.com].ttf", "name": "Adobe Arabic Regular"},
+  {"file": "AGENCYB.TTF", "name": "AGENCYB"},
+  {"file": "AGENCYR.TTF", "name": "AGENCYR"},
+  {"file": "AKHBR.TTF", "name": "AKHBR"},
+  {"file": "AKHBRBD.TTF", "name": "AKHBRBD"},
+  {"file": "Al-Awwal-Bold.ttf", "name": "Al-Awwal-Bold"},
+  {"file": "Al-Awwal-Regular.ttf", "name": "Al-Awwal-Regular"},
+  {"file": "aldhabi.ttf", "name": "aldhabi"},
+  {"file": "ALGER.TTF", "name": "ALGER"},
+  {"file": "almasmak-font.otf", "name": "almasmak-font"},
+  {"file": "alnaseeb-font.otf", "name": "alnaseeb-font"},
+  {"file": "andlso.ttf", "name": "andlso"},
+  {"file": "ANTQUAB.TTF", "name": "ANTQUAB"},
+  {"file": "ANTQUABI.TTF", "name": "ANTQUABI"},
+  {"file": "ANTQUAI.TTF", "name": "ANTQUAI"},
+  {"file": "ARABSQ.TTF", "name": "ARABSQ"},
+  {"file": "arabtype.ttf", "name": "arabtype"},
+  {"file": "ARBSQDTP.TTF", "name": "ARBSQDTP"},
+  {"file": "arial.ttf", "name": "arial"},
+  {"file": "arialbd.ttf", "name": "arialbd"},
+  {"file": "arialbi.ttf", "name": "arialbi"},
+  {"file": "ariali.ttf", "name": "ariali"},
+  {"file": "ARIALN.TTF", "name": "ARIALN"},
+  {"file": "ARIALNB.TTF", "name": "ARIALNB"},
+  {"file": "ARIALNBI.TTF", "name": "ARIALNBI"},
+  {"file": "ARIALNI.TTF", "name": "ARIALNI"},
+  {"file": "ariblk.ttf", "name": "ariblk"},
+  {"file": "ARLRDBD.TTF", "name": "ARLRDBD"},
+  {"file": "ba790ed5-7463-4fcc-96d1-4849d1d663a4.ttf", "name": "ba790ed5-7463-4fcc-96d1-4849d1d663a4"},
+  {"file": "bahnschrift.ttf", "name": "bahnschrift"},
+  {"file": "BASKVILL.TTF", "name": "BASKVILL"},
+  {"file": "BAUHS93.TTF", "name": "BAUHS93"},
+  {"file": "BELL.TTF", "name": "BELL"},
+  {"file": "BELLB.TTF", "name": "BELLB"},
+  {"file": "BELLI.TTF", "name": "BELLI"},
+  {"file": "BERNHC.TTF", "name": "BERNHC"},
+  {"file": "BKANT.TTF", "name": "BKANT"},
+  {"file": "BLDITLAR.TTF", "name": "BLDITLAR"},
+  {"file": "BOD_B.TTF", "name": "BOD_B"},
+  {"file": "BOD_BI.TTF", "name": "BOD_BI"},
+  {"file": "BOD_BLAI.TTF", "name": "BOD_BLAI"},
+  {"file": "BOD_BLAR.TTF", "name": "BOD_BLAR"},
+  {"file": "BOD_CB.TTF", "name": "BOD_CB"},
+  {"file": "BOD_CBI.TTF", "name": "BOD_CBI"},
+  {"file": "BOD_CI.TTF", "name": "BOD_CI"},
+  {"file": "BOD_CR.TTF", "name": "BOD_CR"},
+  {"file": "BOD_I.TTF", "name": "BOD_I"},
+  {"file": "BOD_PSTC.TTF", "name": "BOD_PSTC"},
+  {"file": "BOD_R.TTF", "name": "BOD_R"},
+  {"file": "BOOKOS.TTF", "name": "BOOKOS"},
+  {"file": "BOOKOSB.TTF", "name": "BOOKOSB"},
+  {"file": "BOOKOSBI.TTF", "name": "BOOKOSBI"},
+  {"file": "BOOKOSI.TTF", "name": "BOOKOSI"},
+  {"file": "BRADHITC.TTF", "name": "BRADHITC"},
+  {"file": "BRITANIC.TTF", "name": "BRITANIC"},
+  {"file": "BRLNSB.TTF", "name": "BRLNSB"},
+  {"file": "BRLNSDB.TTF", "name": "BRLNSDB"},
+  {"file": "BRLNSR.TTF", "name": "BRLNSR"},
+  {"file": "BROADW.TTF", "name": "BROADW"},
+  {"file": "BRUSHSCI.TTF", "name": "BRUSHSCI"},
+  {"file": "BSSYM7.TTF", "name": "BSSYM7"},
+  {"file": "Cairo-Black.ttf", "name": "Cairo-Black"},
+  {"file": "Cairo-Bold.ttf", "name": "Cairo-Bold"},
+  {"file": "Cairo-ExtraBold.ttf", "name": "Cairo-ExtraBold"},
+  {"file": "Cairo-ExtraLight.ttf", "name": "Cairo-ExtraLight"},
+  {"file": "Cairo-Light.ttf", "name": "Cairo-Light"},
+  {"file": "Cairo-Medium.ttf", "name": "Cairo-Medium"},
+  {"file": "Cairo-SemiBold.ttf", "name": "Cairo-SemiBold"},
+  {"file": "Cairo-VariableFont_slnt,wght.ttf", "name": "Cairo-VariableFont_slnt,wght"},
+  {"file": "calibri.ttf", "name": "calibri"},
+  {"file": "calibrib.ttf", "name": "calibrib"},
+  {"file": "calibrii.ttf", "name": "calibrii"},
+  {"file": "calibril.ttf", "name": "calibril"},
+  {"file": "calibrili.ttf", "name": "calibrili"},
+  {"file": "calibriz.ttf", "name": "calibriz"},
+  {"file": "CALIFB.TTF", "name": "CALIFB"},
+  {"file": "CALIFI.TTF", "name": "CALIFI"},
+  {"file": "CALIFR.TTF", "name": "CALIFR"},
+  {"file": "CALIST.TTF", "name": "CALIST"},
+  {"file": "CALISTB.TTF", "name": "CALISTB"},
+  {"file": "CALISTBI.TTF", "name": "CALISTBI"},
+  {"file": "CALISTI.TTF", "name": "CALISTI"},
+  {"file": "cambriab.ttf", "name": "cambriab"},
+  {"file": "cambriai.ttf", "name": "cambriai"},
+  {"file": "cambriaz.ttf", "name": "cambriaz"},
+  {"file": "Candara.ttf", "name": "Candara"},
+  {"file": "Candarab.ttf", "name": "Candarab"},
+  {"file": "Candarai.ttf", "name": "Candarai"},
+  {"file": "Candaral.ttf", "name": "Candaral"},
+  {"file": "Candarali.ttf", "name": "Candarali"},
+  {"file": "Candaraz.ttf", "name": "Candaraz"},
+  {"file": "CASTELAR.TTF", "name": "CASTELAR"},
+  {"file": "CENSCBK.TTF", "name": "CENSCBK"},
+  {"file": "CENTAUR.TTF", "name": "CENTAUR"},
+  {"file": "CENTURY.TTF", "name": "CENTURY"},
+  {"file": "CHILLER.TTF", "name": "CHILLER"},
+  {"file": "COLONNA.TTF", "name": "COLONNA"},
+  {"file": "comic.ttf", "name": "comic"},
+  {"file": "comicbd.ttf", "name": "comicbd"},
+  {"file": "comici.ttf", "name": "comici"},
+  {"file": "comicz.ttf", "name": "comicz"},
+  {"file": "consola.ttf", "name": "consola"},
+  {"file": "consolab.ttf", "name": "consolab"},
+  {"file": "consolai.ttf", "name": "consolai"},
+  {"file": "consolaz.ttf", "name": "consolaz"},
+  {"file": "constan.ttf", "name": "constan"},
+  {"file": "constanb.ttf", "name": "constanb"},
+  {"file": "constani.ttf", "name": "constani"},
+  {"file": "constanz.ttf", "name": "constanz"},
+  {"file": "COOPBL.TTF", "name": "COOPBL"},
+  {"file": "COPRGTB.TTF", "name": "COPRGTB"},
+  {"file": "COPRGTL.TTF", "name": "COPRGTL"},
+  {"file": "corbel.ttf", "name": "corbel"},
+  {"file": "corbelb.ttf", "name": "corbelb"},
+  {"file": "corbeli.ttf", "name": "corbeli"},
+  {"file": "corbell.ttf", "name": "corbell"},
+  {"file": "corbelli.ttf", "name": "corbelli"},
+  {"file": "corbelz.ttf", "name": "corbelz"},
+  {"file": "cour.ttf", "name": "cour"},
+  {"file": "courbd.ttf", "name": "courbd"},
+  {"file": "courbi.ttf", "name": "courbi"},
+  {"file": "couri.ttf", "name": "couri"},
+  {"file": "CURLZ___.TTF", "name": "CURLZ___"},
+  {"file": "DIWANBNT.TTF", "name": "DIWANBNT"},
+  {"file": "DIWANLTR.TTF", "name": "DIWANLTR"},
+  {"file": "DTHULUTH.TTF", "name": "DTHULUTH"},
+  {"file": "DTNASKH0.TTF", "name": "DTNASKH0"},
+  {"file": "DTNASKH1.TTF", "name": "DTNASKH1"},
+  {"file": "DTNASKH2.TTF", "name": "DTNASKH2"},
+  {"file": "DTNASKH3.TTF", "name": "DTNASKH3"},
+  {"file": "DTNASKH4.TTF", "name": "DTNASKH4"},
+  {"file": "DUBAI-BOLD.TTF", "name": "DUBAI-BOLD"},
+  {"file": "DUBAI-LIGHT.TTF", "name": "DUBAI-LIGHT"},
+  {"file": "DUBAI-MEDIUM.TTF", "name": "DUBAI-MEDIUM"},
+  {"file": "DUBAI-REGULAR.TTF", "name": "DUBAI-REGULAR"},
+  {"file": "DWNOUTSH.TTF", "name": "DWNOUTSH"},
+  {"file": "DWNSH2.TTF", "name": "DWNSH2"},
+  {"file": "DWNSPOUT.TTF", "name": "DWNSPOUT"},
+  {"file": "DWNSPSTR.TTF", "name": "DWNSPSTR"},
+  {"file": "ebrima.ttf", "name": "ebrima"},
+  {"file": "ebrimabd.ttf", "name": "ebrimabd"},
+  {"file": "ELEPHNT.TTF", "name": "ELEPHNT"},
+  {"file": "ELEPHNTI.TTF", "name": "ELEPHNTI"},
+  {"file": "ENGR.TTF", "name": "ENGR"},
+  {"file": "ERASBD.TTF", "name": "ERASBD"},
+  {"file": "ERASDEMI.TTF", "name": "ERASDEMI"},
+  {"file": "ERASLGHT.TTF", "name": "ERASLGHT"},
+  {"file": "ERASMD.TTF", "name": "ERASMD"},
+  {"file": "FELIXTI.TTF", "name": "FELIXTI"},
+  {"file": "FORTE.TTF", "name": "FORTE"},
+  {"file": "FRABK.TTF", "name": "FRABK"},
+  {"file": "FRABKIT.TTF", "name": "FRABKIT"},
+  {"file": "FRADM.TTF", "name": "FRADM"},
+  {"file": "FRADMCN.TTF", "name": "FRADMCN"},
+  {"file": "FRADMIT.TTF", "name": "FRADMIT"},
+  {"file": "FRAHV.TTF", "name": "FRAHV"},
+  {"file": "FRAHVIT.TTF", "name": "FRAHVIT"},
+  {"file": "framd.ttf", "name": "framd"},
+  {"file": "FRAMDCN.TTF", "name": "FRAMDCN"},
+  {"file": "framdit.ttf", "name": "framdit"},
+  {"file": "FREESCPT.TTF", "name": "FREESCPT"},
+  {"file": "FRSCRIPT.TTF", "name": "FRSCRIPT"},
+  {"file": "FRSSPBL.TTF", "name": "FRSSPBL"},
+  {"file": "FRSSPOUT.TTF", "name": "FRSSPOUT"},
+  {"file": "FTLTLT.TTF", "name": "FTLTLT"},
+  {"file": "Gabriola.ttf", "name": "Gabriola"},
+  {"file": "gadugi.ttf", "name": "gadugi"},
+  {"file": "gadugib.ttf", "name": "gadugib"},
+  {"file": "GARA.TTF", "name": "GARA"},
+  {"file": "GARABD.TTF", "name": "GARABD"},
+  {"file": "GARAIT.TTF", "name": "GARAIT"},
+  {"file": "georgia.ttf", "name": "georgia"},
+  {"file": "georgiab.ttf", "name": "georgiab"},
+  {"file": "georgiai.ttf", "name": "georgiai"},
+  {"file": "georgiaz.ttf", "name": "georgiaz"},
+  {"file": "GIGI.TTF", "name": "GIGI"},
+  {"file": "GILBI___.TTF", "name": "GILBI___"},
+  {"file": "GILB____.TTF", "name": "GILB____"},
+  {"file": "GILC____.TTF", "name": "GILC____"},
+  {"file": "GILI____.TTF", "name": "GILI____"},
+  {"file": "GILLUBCD.TTF", "name": "GILLUBCD"},
+  {"file": "GILSANUB.TTF", "name": "GILSANUB"},
+  {"file": "GIL_____.TTF", "name": "GIL_____"},
+  {"file": "GLECB.TTF", "name": "GLECB"},
+  {"file": "GLSNECB.TTF", "name": "GLSNECB"},
+  {"file": "GOTHIC.TTF", "name": "GOTHIC"},
+  {"file": "GOTHICB.TTF", "name": "GOTHICB"},
+  {"file": "GOTHICBI.TTF", "name": "GOTHICBI"},
+  {"file": "GOTHICI.TTF", "name": "GOTHICI"},
+  {"file": "GOUDOS.TTF", "name": "GOUDOS"},
+  {"file": "GOUDOSB.TTF", "name": "GOUDOSB"},
+  {"file": "GOUDOSI.TTF", "name": "GOUDOSI"},
+  {"file": "GOUDYSTO.TTF", "name": "GOUDYSTO"},
+  {"file": "HARLOWSI.TTF", "name": "HARLOWSI"},
+  {"file": "HarmonyOS_Sans_SC_Bold.ttf", "name": "HarmonyOS_Sans_SC_Bold"},
+  {"file": "HarmonyOS_Sans_SC_Regular.ttf", "name": "HarmonyOS_Sans_SC_Regular"},
+  {"file": "HARNGTON.TTF", "name": "HARNGTON"},
+  {"file": "HATTEN.TTF", "name": "HATTEN"},
+  {"file": "himalaya.ttf", "name": "himalaya"},
+  {"file": "HTOWERT.TTF", "name": "HTOWERT"},
+  {"file": "HTOWERTI.TTF", "name": "HTOWERTI"},
+  {"file": "IBMPlexSansArabic-Bold.ttf", "name": "IBMPlexSansArabic-Bold"},
+  {"file": "IBMPlexSansArabic-ExtraLight.ttf", "name": "IBMPlexSansArabic-ExtraLight"},
+  {"file": "IBMPlexSansArabic-Light.ttf", "name": "IBMPlexSansArabic-Light"},
+  {"file": "IBMPlexSansArabic-Medium.ttf", "name": "IBMPlexSansArabic-Medium"},
+  {"file": "IBMPlexSansArabic-Regular.ttf", "name": "IBMPlexSansArabic-Regular"},
+  {"file": "IBMPlexSansArabic-SemiBold.ttf", "name": "IBMPlexSansArabic-SemiBold"},
+  {"file": "IBMPlexSansArabic-Thin.ttf", "name": "IBMPlexSansArabic-Thin"},
+  {"file": "impact.ttf", "name": "impact"},
+  {"file": "IMPRISHA.TTF", "name": "IMPRISHA"},
+  {"file": "INFROMAN.TTF", "name": "INFROMAN"},
+  {"file": "Inkfree.ttf", "name": "Inkfree"},
+  {"file": "ITCBLKAD.TTF", "name": "ITCBLKAD"},
+  {"file": "ITCEDSCR.TTF", "name": "ITCEDSCR"},
+  {"file": "ITCKRIST.TTF", "name": "ITCKRIST"},
+  {"file": "ITLOUTAR.TTF", "name": "ITLOUTAR"},
+  {"file": "javatext.ttf", "name": "javatext"},
+  {"file": "JOKERMAN.TTF", "name": "JOKERMAN"},
+  {"file": "JUICE___.TTF", "name": "JUICE___"},
+  {"file": "KFEXTOUT.TTF", "name": "KFEXTOUT"},
+  {"file": "KFOUTSHD.TTF", "name": "KFOUTSHD"},
+  {"file": "KOUFIBD.TTF", "name": "KOUFIBD"},
+  {"file": "KUNSTLER.TTF", "name": "KUNSTLER"},
+  {"file": "LATINWD.TTF", "name": "LATINWD"},
+  {"file": "LBRITE.TTF", "name": "LBRITE"},
+  {"file": "LBRITED.TTF", "name": "LBRITED"},
+  {"file": "LBRITEDI.TTF", "name": "LBRITEDI"},
+  {"file": "LBRITEI.TTF", "name": "LBRITEI"},
+  {"file": "LCALLIG.TTF", "name": "LCALLIG"},
+  {"file": "LEDITFNT.TTF", "name": "LEDITFNT"},
+  {"file": "LeelaUIb.ttf", "name": "LeelaUIb"},
+  {"file": "LEELAWAD.TTF", "name": "LEELAWAD"},
+  {"file": "LEELAWDB.TTF", "name": "LEELAWDB"},
+  {"file": "LeelawUI.ttf", "name": "LeelawUI"},
+  {"file": "LeelUIsl.ttf", "name": "LeelUIsl"},
+  {"file": "LFAX.TTF", "name": "LFAX"},
+  {"file": "LFAXD.TTF", "name": "LFAXD"},
+  {"file": "LFAXDI.TTF", "name": "LFAXDI"},
+  {"file": "LFAXI.TTF", "name": "LFAXI"},
+  {"file": "LHANDW.TTF", "name": "LHANDW"},
+  {"file": "LSANS.TTF", "name": "LSANS"},
+  {"file": "LSANSD.TTF", "name": "LSANSD"},
+  {"file": "LSANSDI.TTF", "name": "LSANSDI"},
+  {"file": "LSANSI.TTF", "name": "LSANSI"},
+  {"file": "LTYPE.TTF", "name": "LTYPE"},
+  {"file": "LTYPEB.TTF", "name": "LTYPEB"},
+  {"file": "LTYPEBO.TTF", "name": "LTYPEBO"},
+  {"file": "LTYPEO.TTF", "name": "LTYPEO"},
+  {"file": "lucon.ttf", "name": "lucon"},
+  {"file": "l_10646.ttf", "name": "l_10646"},
+  {"file": "MAGNETOB.TTF", "name": "MAGNETOB"},
+  {"file": "MAIAN.TTF", "name": "MAIAN"},
+  {"file": "majalla.ttf", "name": "majalla"},
+  {"file": "majallab.ttf", "name": "majallab"},
+  {"file": "malgun.ttf", "name": "malgun"},
+  {"file": "malgunbd.ttf", "name": "malgunbd"},
+  {"file": "malgunsl.ttf", "name": "malgunsl"},
+  {"file": "MATURASC.TTF", "name": "MATURASC"},
+  {"file": "micross.ttf", "name": "micross"},
+  {"file": "MISTRAL.TTF", "name": "MISTRAL"},
+  {"file": "mmrtext.ttf", "name": "mmrtext"},
+  {"file": "mmrtextb.ttf", "name": "mmrtextb"},
+  {"file": "MOD20.TTF", "name": "MOD20"},
+  {"file": "monbaiti.ttf", "name": "monbaiti"},
+  {"file": "msuighub.ttf", "name": "msuighub"},
+  {"file": "msuighur.ttf", "name": "msuighur"},
+  {"file": "msyi.ttf", "name": "msyi"},
+  {"file": "MTCORSVA.TTF", "name": "MTCORSVA"},
+  {"file": "MTEXTRA.TTF", "name": "MTEXTRA"},
+  {"file": "MUDIR.TTF", "name": "MUDIR"},
+  {"file": "mvboli.ttf", "name": "mvboli"},
+  {"file": "NanumGothic-Bold.ttf", "name": "NanumGothic-Bold"},
+  {"file": "NanumGothic-Regular.ttf", "name": "NanumGothic-Regular"},
+  {"file": "Neo Sans.TTF", "name": "Neo Sans"},
+  {"file": "NIAGENG.TTF", "name": "NIAGENG"},
+  {"file": "NIAGSOL.TTF", "name": "NIAGSOL"},
+  {"file": "ntailu.ttf", "name": "ntailu"},
+  {"file": "ntailub.ttf", "name": "ntailub"},
+  {"file": "OCRAEXT.TTF", "name": "OCRAEXT"},
+  {"file": "OLDANBLD.TTF", "name": "OLDANBLD"},
+  {"file": "OLDANDEC.TTF", "name": "OLDANDEC"},
+  {"file": "OLDANOUT.TTF", "name": "OLDANOUT"},
+  {"file": "OLDENGL.TTF", "name": "OLDENGL"},
+  {"file": "OLDOUTSH.TTF", "name": "OLDOUTSH"},
+  {"file": "ONYX.TTF", "name": "ONYX"},
+  {"file": "OUTLOOK.TTF", "name": "OUTLOOK"},
+  {"file": "pala.ttf", "name": "pala"},
+  {"file": "palab.ttf", "name": "palab"},
+  {"file": "palabi.ttf", "name": "palabi"},
+  {"file": "palai.ttf", "name": "palai"},
+  {"file": "PALSCRI.TTF", "name": "PALSCRI"},
+  {"file": "PAPYRUS.TTF", "name": "PAPYRUS"},
+  {"file": "PARCHM.TTF", "name": "PARCHM"},
+  {"file": "PERBI___.TTF", "name": "PERBI___"},
+  {"file": "PERB____.TTF", "name": "PERB____"},
+  {"file": "PERI____.TTF", "name": "PERI____"},
+  {"file": "PERTIBD.TTF", "name": "PERTIBD"},
+  {"file": "PERTILI.TTF", "name": "PERTILI"},
+  {"file": "PER_____.TTF", "name": "PER_____"},
+  {"file": "phagspa.ttf", "name": "phagspa"},
+  {"file": "phagspab.ttf", "name": "phagspab"},
+  {"file": "PLAYBILL.TTF", "name": "PLAYBILL"},
+  {"file": "PNU-Bold.ttf", "name": "PNU-Bold"},
+  {"file": "PNU-Medium.ttf", "name": "PNU-Medium"},
+  {"file": "PNU-Regular.ttf", "name": "PNU-Regular"},
+  {"file": "POORICH.TTF", "name": "POORICH"},
+  {"file": "PRISTINA.TTF", "name": "PRISTINA"},
+  {"file": "PTBLDARC.TTF", "name": "PTBLDARC"},
+  {"file": "PTBLDBRK.TTF", "name": "PTBLDBRK"},
+  {"file": "PTBLDDSK.TTF", "name": "PTBLDDSK"},
+  {"file": "PTBLDHAD.TTF", "name": "PTBLDHAD"},
+  {"file": "PTBLDMRR.TTF", "name": "PTBLDMRR"},
+  {"file": "PTBLSSTR.TTF", "name": "PTBLSSTR"},
+  {"file": "PTSEPBAL.TTF", "name": "PTSEPBAL"},
+  {"file": "RAGE.TTF", "name": "RAGE"},
+  {"file": "RAVIE.TTF", "name": "RAVIE"},
+  {"file": "REFSAN.TTF", "name": "REFSAN"},
+  {"file": "REFSPCL.TTF", "name": "REFSPCL"},
+  {"file": "ROCCB___.TTF", "name": "ROCCB___"},
+  {"file": "ROCC____.TTF", "name": "ROCC____"},
+  {"file": "ROCK.TTF", "name": "ROCK"},
+  {"file": "ROCKB.TTF", "name": "ROCKB"},
+  {"file": "ROCKBI.TTF", "name": "ROCKBI"},
+  {"file": "ROCKEB.TTF", "name": "ROCKEB"},
+  {"file": "ROCKI.TTF", "name": "ROCKI"},
+  {"file": "SansSerifCollection.ttf", "name": "SansSerifCollection"},
+  {"file": "Saudi-Bold.ttf", "name": "Saudi-Bold"},
+  {"file": "Saudi-Medium.ttf", "name": "Saudi-Medium"},
+  {"file": "Saudi-Regular.ttf", "name": "Saudi-Regular"},
+  {"file": "Saudi-SemiBold.ttf", "name": "Saudi-SemiBold"},
+  {"file": "saudi_riyal.otf", "name": "saudi_riyal"},
+  {"file": "SCHLBKB.TTF", "name": "SCHLBKB"},
+  {"file": "SCHLBKBI.TTF", "name": "SCHLBKBI"},
+  {"file": "SCHLBKI.TTF", "name": "SCHLBKI"},
+  {"file": "SCRIPTBL.TTF", "name": "SCRIPTBL"},
+  {"file": "segmdl2.ttf", "name": "segmdl2"},
+  {"file": "SegoeIcons.ttf", "name": "SegoeIcons"},
+  {"file": "segoepr.ttf", "name": "segoepr"},
+  {"file": "segoeprb.ttf", "name": "segoeprb"},
+  {"file": "segoesc.ttf", "name": "segoesc"},
+  {"file": "segoescb.ttf", "name": "segoescb"},
+  {"file": "segoeui.ttf", "name": "segoeui"},
+  {"file": "segoeuib.ttf", "name": "segoeuib"},
+  {"file": "segoeuii.ttf", "name": "segoeuii"},
+  {"file": "segoeuil.ttf", "name": "segoeuil"},
+  {"file": "segoeuisl.ttf", "name": "segoeuisl"},
+  {"file": "segoeuiz.ttf", "name": "segoeuiz"},
+  {"file": "seguibl.ttf", "name": "seguibl"},
+  {"file": "seguibli.ttf", "name": "seguibli"},
+  {"file": "seguiemj.ttf", "name": "seguiemj"},
+  {"file": "seguihis.ttf", "name": "seguihis"},
+  {"file": "seguili.ttf", "name": "seguili"},
+  {"file": "seguisb.ttf", "name": "seguisb"},
+  {"file": "seguisbi.ttf", "name": "seguisbi"},
+  {"file": "seguisli.ttf", "name": "seguisli"},
+  {"file": "seguisym.ttf", "name": "seguisym"},
+  {"file": "SegUIVar.ttf", "name": "SegUIVar"},
+  {"file": "SHOWG.TTF", "name": "SHOWG"},
+  {"file": "simpbdo.ttf", "name": "simpbdo"},
+  {"file": "simpfxo.ttf", "name": "simpfxo"},
+  {"file": "simpo.ttf", "name": "simpo"},
+  {"file": "simsunb.ttf", "name": "simsunb"},
+  {"file": "SimsunExtG.ttf", "name": "SimsunExtG"},
+  {"file": "SitkaVF-Italic.ttf", "name": "SitkaVF-Italic"},
+  {"file": "SitkaVF.ttf", "name": "SitkaVF"},
+  {"file": "SNAP____.TTF", "name": "SNAP____"},
+  {"file": "Solar6VF.ttf", "name": "Solar6VF"},
+  {"file": "SourceHanSansJP-Bold.otf", "name": "SourceHanSansJP-Bold"},
+  {"file": "SourceHanSansJP-Normal.otf", "name": "SourceHanSansJP-Normal"},
+  {"file": "SPBLDJUT.TTF", "name": "SPBLDJUT"},
+  {"file": "SPBLDRUL.TTF", "name": "SPBLDRUL"},
+  {"file": "SPINDOUT.TTF", "name": "SPINDOUT"},
+  {"file": "SPINDSHD.TTF", "name": "SPINDSHD"},
+  {"file": "SPOUTPAT.TTF", "name": "SPOUTPAT"},
+  {"file": "STENCIL.TTF", "name": "STENCIL"},
+  {"file": "sylfaen.ttf", "name": "sylfaen"},
+  {"file": "symbol.ttf", "name": "symbol"},
+  {"file": "tahoma.ttf", "name": "tahoma"},
+  {"file": "tahomabd.ttf", "name": "tahomabd"},
+  {"file": "taile.ttf", "name": "taile"},
+  {"file": "taileb.ttf", "name": "taileb"},
+  {"file": "TCBI____.TTF", "name": "TCBI____"},
+  {"file": "TCB_____.TTF", "name": "TCB_____"},
+  {"file": "TCCB____.TTF", "name": "TCCB____"},
+  {"file": "TCCEB.TTF", "name": "TCCEB"},
+  {"file": "TCCM____.TTF", "name": "TCCM____"},
+  {"file": "TCMI____.TTF", "name": "TCMI____"},
+  {"file": "TCM_____.TTF", "name": "TCM_____"},
+  {"file": "TEMPSITC.TTF", "name": "TEMPSITC"},
+  {"file": "TheYearofHandicrafts-Black.otf", "name": "TheYearofHandicrafts-Black"},
+  {"file": "TheYearofHandicrafts-Bold.otf", "name": "TheYearofHandicrafts-Bold"},
+  {"file": "TheYearofHandicrafts-Medium.otf", "name": "TheYearofHandicrafts-Medium"},
+  {"file": "TheYearofHandicrafts-Regular.otf", "name": "TheYearofHandicrafts-Regular"},
+  {"file": "TheYearofHandicrafts-SemiBold.otf", "name": "TheYearofHandicrafts-SemiBold"},
+  {"file": "TheYearofTheCamel-Bold.otf", "name": "TheYearofTheCamel-Bold"},
+  {"file": "TheYearofTheCamel-ExtraBold.otf", "name": "TheYearofTheCamel-ExtraBold"},
+  {"file": "TheYearofTheCamel-ExtraLight.otf", "name": "TheYearofTheCamel-ExtraLight"},
+  {"file": "TheYearofTheCamel-Light.otf", "name": "TheYearofTheCamel-Light"},
+  {"file": "TheYearofTheCamel-Medium.otf", "name": "TheYearofTheCamel-Medium"},
+  {"file": "TheYearofTheCamel-Regular.otf", "name": "TheYearofTheCamel-Regular"},
+  {"file": "TheYearofTheCamel-Thin.otf", "name": "TheYearofTheCamel-Thin"},
+  {"file": "times.ttf", "name": "times"},
+  {"file": "timesbd.ttf", "name": "timesbd"},
+  {"file": "timesbi.ttf", "name": "timesbi"},
+  {"file": "timesi.ttf", "name": "timesi"},
+  {"file": "tradbdo.ttf", "name": "tradbdo"},
+  {"file": "trado.ttf", "name": "trado"},
+  {"file": "trebuc.ttf", "name": "trebuc"},
+  {"file": "trebucbd.ttf", "name": "trebucbd"},
+  {"file": "trebucbi.ttf", "name": "trebucbi"},
+  {"file": "trebucit.ttf", "name": "trebucit"},
+  {"file": "Ubuntu-Bold.ttf", "name": "Ubuntu-Bold"},
+  {"file": "Ubuntu-BoldItalic.ttf", "name": "Ubuntu-BoldItalic"},
+  {"file": "Ubuntu-Italic.ttf", "name": "Ubuntu-Italic"},
+  {"file": "Ubuntu-Light.ttf", "name": "Ubuntu-Light"},
+  {"file": "Ubuntu-LightItalic.ttf", "name": "Ubuntu-LightItalic"},
+  {"file": "Ubuntu-Medium.ttf", "name": "Ubuntu-Medium"},
+  {"file": "Ubuntu-MediumItalic.ttf", "name": "Ubuntu-MediumItalic"},
+  {"file": "Ubuntu-Regular.ttf", "name": "Ubuntu-Regular"},
+  {"file": "UrdType.ttf", "name": "UrdType"},
+  {"file": "UrdTypeb.ttf", "name": "UrdTypeb"},
+  {"file": "verdana.ttf", "name": "verdana"},
+  {"file": "verdanab.ttf", "name": "verdanab"},
+  {"file": "verdanai.ttf", "name": "verdanai"},
+  {"file": "verdanaz.ttf", "name": "verdanaz"},
+  {"file": "VINERITC.TTF", "name": "VINERITC"},
+  {"file": "VIVALDII.TTF", "name": "VIVALDII"},
+  {"file": "VLADIMIR.TTF", "name": "VLADIMIR"},
+  {"file": "watad-font.otf", "name": "watad-font"},
+  {"file": "webdings.ttf", "name": "webdings"},
+  {"file": "wingding.ttf", "name": "wingding"},
+  {"file": "WINGDNG2.TTF", "name": "WINGDNG2"},
+  {"file": "WINGDNG3.TTF", "name": "WINGDNG3"},
+  {"file": "Year of arabic font.otf", "name": "Year of arabic font"}
+];
+
+// ══ DRIVE CONFIG ══
+const DRIVE_API   = 'https://www.googleapis.com/drive/v3';
+const UPLOAD_API  = 'https://www.googleapis.com/upload/drive/v3';
+const FOLDER_INSTALLED = '1OFmBQSPhGSi9l2NXbTqSMZjIt8KDKg1p';
+const FOLDER_UPLOADED  = '1gRWafDQj_JrvJwMwqb43FqY7iyHduQFm';
+const FONT_MIME   = ['font/ttf','font/otf','font/woff','font/woff2',
+                     'application/x-font-ttf','application/x-font-otf',
+                     'application/octet-stream'];
+
+// Google Identity auth — uses the session already authenticated by Claude's Drive connector
+// We fetch using the same origin cookies/session that Claude has access to
+// However from HTML we need to use CORS-safe approach
+
+// ══ IndexedDB ══
+const DB='FontStudio_v4',STORE='fonts';
+let db=null;
+async function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(DB,1);
+    r.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains(STORE))d.createObjectStore(STORE,{keyPath:'filename'})};
+    r.onsuccess=e=>res(e.target.result);
+    r.onerror=e=>rej(e.target.error);
+  });
+}
+async function dbPut(rec){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(rec);tx.oncomplete=res;tx.onerror=rej})}
+async function dbGetAll(){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readonly');const r=tx.objectStore(STORE).getAll();r.onsuccess=e=>res(e.target.result);r.onerror=rej})}
+async function dbClear(){return new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).clear();tx.oncomplete=res;tx.onerror=rej})}
+
+// ══ STATE ══
+const S={font:null,fontName:null,italic:false,underline:false,strike:false,align:'center',bs:'none',
+  fx:{gradient:false,outline:false,neon:false,blur:false}};
+
+const installedFonts=FONT_CATALOG.map(f=>({'filename':f.file,'name':f.name,'fontFamily':null,'loaded':false,'src':'installed'}));
+const uploadedFonts=[];   // from Drive "Uploaded" folder
+const localFonts=[];      // uploaded locally this session
+const fontMap={};
+installedFonts.forEach(f=>fontMap[f.filename]=f);
+
+let activeTab='installed';
+let driveToken=null;
+let driveConnected=false;
+
+// ══ TABS ══
+function switchTab(tab){
+  activeTab=tab;
+  ['installed','uploaded','local'].forEach(t=>{
+    document.getElementById('tab-'+t).classList.toggle('on',t===tab);
+  });
+  filterFonts(document.getElementById('fsearch').value);
+}
+
+function getTabList(){
+  if(activeTab==='installed') return installedFonts;
+  if(activeTab==='uploaded')  return uploadedFonts;
+  return localFonts;
+}
+
+// ══ RENDER ══
+function renderList(arr){
+  const list=document.getElementById('fl');
+  list.innerHTML='';
+  if(!arr.length){
+    const msgs={installed:'ارفع ZIP لتحميل الخطوط',uploaded:'لا توجد خطوط في Drive بعد',local:'ارفع خطوطك هنا'};
+    list.innerHTML=`<div style="text-align:center;color:var(--tx2);padding:14px;font-size:10px">${msgs[activeTab]||'—'}</div>`;
+    return;
+  }
+  arr.forEach(f=>{
+    const el=document.createElement('div');
+    el.className='fi '+(f.loaded?'ok':'miss')+(f.src==='uploaded'?' dr-loaded':f.src==='local'?' user':'');
+    el.innerHTML=`<div class="fn">${f.name}</div><div class="ff">${f.filename}</div>`;
+    el.addEventListener('click',()=>{
+      if(!f.loaded){showToast(f.src==='installed'?'ارفع الـ ZIP لتحميل هذا الخط':'جاري التحميل...','err');return;}
+      selectFont(f);
+    });
+    list.appendChild(el);
+  });
+}
+
+function filterFonts(q){
+  q=q.toLowerCase();
+  const src=getTabList();
+  const filtered=q?src.filter(f=>f.name.toLowerCase().includes(q)||f.filename.toLowerCase().includes(q)):src;
+  renderList(filtered);
+  const total=installedFonts.length+uploadedFonts.length+localFonts.length;
+  document.getElementById('fcBadge').textContent=total+' خط';
+}
+
+// ══ SELECT FONT ══
+function selectFont(f){
+  S.font=f; S.fontName=f.name;
+  document.querySelectorAll('.fi').forEach(el=>el.classList.toggle('active',el.querySelector('.fn')?.textContent===f.name));
+  document.getElementById('cfb').style.display='flex';
+  document.getElementById('cfn').textContent=f.name;
+  document.getElementById('stf').textContent=f.name;
+  updatePreview();
+}
+
+// ══ REGISTER FONT ══
+function registerFont(filename,arrayBuffer,src='local'){
+  const ext=filename.split('.').pop().toLowerCase();
+  const mime={ttf:'font/ttf',otf:'font/otf',woff:'font/woff',woff2:'font/woff2'}[ext]||'font/ttf';
+  const blob=new Blob([arrayBuffer],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const ff='F_'+filename.replace(/[^a-zA-Z0-9]/g,'_')+'_'+Date.now().toString(36);
+  const style=document.createElement('style');
+  style.textContent=`@font-face{font-family:'${ff}';src:url('${url}')}`;
+  document.head.appendChild(style);
+
+  // Store base64 for SVG embed
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const b64=e.target.result.split(',')[1];
+    const entry=fontMap[filename];
+    if(entry) entry.base64=b64;
+    else {
+      const lf=localFonts.find(f=>f.filename===filename)||uploadedFonts.find(f=>f.filename===filename);
+      if(lf) lf.base64=b64;
+    }
+  };
+  reader.readAsDataURL(blob);
+
+  if(fontMap[filename]){
+    fontMap[filename].fontFamily=ff; fontMap[filename].loaded=true; fontMap[filename].src=src;
+  } else {
+    const nm=filename.replace(/\.(ttf|otf|woff2?)$/i,'').replace(/[-_]/g,' ');
+    const newF={filename,name:nm,fontFamily:ff,loaded:true,src,base64:null};
+    if(src==='uploaded') uploadedFonts.push(newF);
+    else localFonts.push(newF);
+    fontMap[filename]=newF;
+  }
+  return ff;
+}
+
+// ══ GOOGLE DRIVE API ══
+// Uses gapi token obtained via Google Identity Services
+// Since this HTML runs standalone, we use a token-based approach
+
+async function driveGet(path, params=''){
+  if(!driveToken) return null;
+  try{
+    const r=await fetch(`${DRIVE_API}${path}?${params}&key=`,{
+      headers:{'Authorization':'Bearer '+driveToken}
+    });
+    if(!r.ok) return null;
+    return r.json();
+  }catch{return null;}
+}
+
+async function driveListFolder(folderId){
+  if(!driveToken) return [];
+  try{
+    const q=encodeURIComponent(`'${folderId}' in parents and trashed=false`);
+    const r=await fetch(`${DRIVE_API}/files?q=${q}&fields=files(id,name,mimeType,size)&pageSize=1000`,{
+      headers:{'Authorization':'Bearer '+driveToken}
+    });
+    if(!r.ok) return [];
+    const data=await r.json();
+    return data.files||[];
+  }catch{return [];}
+}
+
+async function driveDownloadFile(fileId){
+  if(!driveToken) return null;
+  try{
+    const r=await fetch(`${DRIVE_API}/files/${fileId}?alt=media`,{
+      headers:{'Authorization':'Bearer '+driveToken}
+    });
+    if(!r.ok) return null;
+    return r.arrayBuffer();
+  }catch{return null;}
+}
+
+async function driveUploadFile(filename,arrayBuffer,folderId){
+  if(!driveToken) return null;
+  const ext=filename.split('.').pop().toLowerCase();
+  const mime={ttf:'font/ttf',otf:'font/otf',woff:'font/woff',woff2:'font/woff2'}[ext]||'application/octet-stream';
+  const meta=JSON.stringify({name:filename,parents:[folderId]});
+  const blob=new Blob([arrayBuffer],{type:mime});
+  const form=new FormData();
+  form.append('metadata',new Blob([meta],{type:'application/json'}));
+  form.append('file',blob);
+  try{
+    const r=await fetch(`${UPLOAD_API}/files?uploadType=multipart`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+driveToken},
+      body:form
+    });
+    return r.ok ? r.json() : null;
+  }catch{return null;}
+}
+
+// ══ SYNC FROM DRIVE ══
+async function syncDriveFolder(tab){
+  const folderId=tab==='installed'?FOLDER_INSTALLED:FOLDER_UPLOADED;
+  const btn=document.getElementById(tab==='installed'?'btnSyncInstalled':'btnSyncInstalled');
+  showToast(`☁ جاري التزامن من Drive...`,'dr');
+
+  const files=await driveListFolder(folderId);
+  const fontFiles=files.filter(f=>/\.(ttf|otf|woff2?)$/i.test(f.name));
+
+  if(!fontFiles.length){showToast('المجلد فارغ في Drive','err');return;}
+
+  let done=0;
+  for(const file of fontFiles){
+    // Check if already in IDB
+    const existing=fontMap[file.name];
+    if(existing&&existing.loaded){done++;continue;}
+    const ab=await driveDownloadFile(file.id);
+    if(!ab) continue;
+    registerFont(file.name,ab,tab==='installed'?'installed':'uploaded');
+    await dbPut({filename:file.name,data:ab,src:tab==='installed'?'installed':'uploaded'});
+    done++;
+    showToast(`☁ ${done}/${fontFiles.length} خط`,'dr');
+  }
+
+  document.getElementById('lc').textContent=
+    installedFonts.filter(f=>f.loaded).length+uploadedFonts.length+localFonts.length;
+  filterFonts(document.getElementById('fsearch').value);
+  showToast(`✅ تم تزامن ${done} خط من Drive`,'ok');
+}
+
+// ══ UPLOAD TO DRIVE ══
+async function uploadSelectedToDrive(){
+  if(!S.font){showToast('اختر خط أولاً','err');return;}
+  if(!driveToken){showToast('غير متصل بـ Drive','err');return;}
+  if(!S.font.base64){showToast('الخط غير جاهز للرفع بعد','err');return;}
+  const ab=Uint8Array.from(atob(S.font.base64),c=>c.charCodeAt(0)).buffer;
+  showToast('☁ جاري الرفع لـ Drive...','dr');
+  const res=await driveUploadFile(S.font.filename,ab,FOLDER_UPLOADED);
+  if(res) showToast(`✅ تم رفع "${S.fontName}" لـ Drive`,'ok');
+  else showToast('فشل الرفع — تحقق من الاتصال','err');
+}
+
+// ══ GOOGLE AUTH — GIS Popup ══
+function loadGoogleAuth(){
+  const s=document.createElement('script');
+  s.src='https://accounts.google.com/gsi/client';
+  s.onload=()=>tryDriveConnect();
+  s.onerror=()=>{document.getElementById('drStat').textContent='تعذّر تحميل Google Auth';}
+  document.head.appendChild(s);
+}
+
+function tryDriveConnect(){
+  if(!window.google?.accounts?.oauth2) return;
+  // Attempt silent token request first
+  const client=google.accounts.oauth2.initTokenClient({
+    client_id:'1073444408975-placeholder.apps.googleusercontent.com', // will be overridden
+    scope:'https://www.googleapis.com/auth/drive',
+    prompt:'',
+    callback:(resp)=>onDriveToken(resp)
+  });
+  // Try silent
+  try{ client.requestAccessToken({prompt:''}); }catch(e){}
+}
+
+function onDriveToken(resp){
+  if(resp.error||!resp.access_token){
+    updateDriveUI(false,'لا يمكن الاتصال بدون Client ID');
+    return;
+  }
+  driveToken=resp.access_token;
+  driveConnected=true;
+  updateDriveUI(true,'متصل ✓');
+  document.getElementById('btnSyncInstalled').disabled=false;
+  document.getElementById('btnUploadFont').disabled=false;
+  document.getElementById('drBadge').classList.remove('hidden');
+  document.getElementById('drDot').style.background='#4285f4';
+  document.getElementById('stdb').textContent='Drive متصل';
+}
+
+function updateDriveUI(ok,msg){
+  document.getElementById('drStat').textContent=msg;
+  document.getElementById('drOnlineBadge').textContent=ok?'● متصل':'○ غير متصل';
+  document.getElementById('drOnlineBadge').style.color=ok?'var(--gr)':'var(--tx2)';
+}
+
+// ══ LOCAL FILE HANDLING ══
+function oDO(e){e.preventDefault();document.getElementById('uz').classList.add('drag')}
+function oDL(){document.getElementById('uz').classList.remove('drag')}
+function oDD(e){e.preventDefault();document.getElementById('uz').classList.remove('drag');handleFiles(e.dataTransfer.files)}
+
+async function handleFiles(files){
+  const arr=Array.from(files);
+  for(const f of arr.filter(f=>f.name.toLowerCase().endsWith('.zip'))) await loadZip(f);
+  for(const f of arr.filter(f=>/\.(ttf|otf|woff2?)$/i.test(f.name))) await loadSingleFont(f);
+  filterFonts(document.getElementById('fsearch').value);
+  document.getElementById('lc').textContent=
+    installedFonts.filter(f=>f.loaded).length+uploadedFonts.length+localFonts.length;
+}
+
+async function loadSingleFont(file){
+  const ab=await file.arrayBuffer();
+  registerFont(file.name,ab,'local');
+  await dbPut({filename:file.name,data:ab,src:'local'});
+  if(driveToken){
+    // Auto-upload to Drive uploaded folder
+    driveUploadFile(file.name,ab,FOLDER_UPLOADED).then(r=>{
+      if(r) showToast(`☁ "${file.name}" تم رفعه لـ Drive تلقائياً`,'dr');
+    });
+  }
+  if(activeTab==='local') filterFonts(document.getElementById('fsearch').value);
+  showToast('تم رفع: '+file.name,'ok');
+}
+
+async function loadZip(file){
+  if(typeof JSZip==='undefined'){
+    await new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+  }
+  const uz=document.getElementById('uz'),pb=document.getElementById('uzp'),bar=document.getElementById('uzb'),uzt=document.getElementById('uzt');
+  pb.style.display='block';uzt.innerHTML='<strong>جاري الاستخراج...</strong>';
+  const zip=await JSZip.loadAsync(file);
+  const entries=Object.values(zip.files).filter(f=>!f.dir&&/\.(ttf|otf|woff2?)$/i.test(f.name));
+  let done=0;
+  for(const entry of entries){
+    const fn=entry.name.split('/').pop();
+    const ab=await entry.async('arraybuffer');
+    registerFont(fn,ab,'installed');
+    try{await dbPut({filename:fn,data:ab,src:'installed'})}catch(e){}
+    done++;
+    bar.style.width=(done/entries.length*100)+'%';
+    if(done%30===0) uzt.innerHTML=`<strong>${done}/${entries.length}</strong>`;
+  }
+  pb.style.display='none';
+  document.getElementById('uzi').textContent='✅';
+  uzt.innerHTML=`<strong>${entries.length} خط جاهز</strong>`;
+  document.getElementById('banner').classList.add('hidden');
+  document.getElementById('dbBadge').textContent=`💾 ${entries.length} خط`;
+  document.getElementById('dbBadge').className='badge ok';
+  document.getElementById('lc').textContent=installedFonts.filter(f=>f.loaded).length;
+  filterFonts(document.getElementById('fsearch').value);
+  showToast(`✅ ${entries.length} خط جاهز`,'ok');
+}
+
+// ══ LOAD FROM IDB ══
+async function loadFromDB(){
+  const recs=await dbGetAll(); let n=0;
+  recs.forEach(rec=>{
+    registerFont(rec.filename,rec.data,rec.src||'installed'); n++;
+  });
+  return n;
+}
+
+// ══ INIT ══
+async function init(){
+  db=await openDB();
+  const n=await loadFromDB();
+  const badge=document.getElementById('dbBadge');
+  if(n===0){
+    badge.textContent='⚠ لا توجد خطوط';badge.className='badge warn';
+    document.getElementById('banner').classList.remove('hidden');
+  }else{
+    badge.textContent=`💾 ${n} خط`;badge.className='badge ok';
+    document.getElementById('stdb').textContent=`${n} خط محفوظ`;
+  }
+  document.getElementById('lc').textContent=
+    installedFonts.filter(f=>f.loaded).length+uploadedFonts.length+localFonts.length;
+  filterFonts('');
+  // Try Drive auth
+  updateDriveUI(false,'جاري الاتصال بـ Drive...');
+  loadGoogleAuth();
+}
+
+async function clearDB(){if(!confirm('مسح؟'))return;await dbClear();location.reload();}
+
+// ══ PREVIEW ══
+function updatePreview(){
+  const box=document.getElementById('pbox');
+  const text=document.getElementById('ptxt-in').value;
+  const fs=+document.getElementById('fs').value;
+  const fw=document.getElementById('fw').value;
+  const ls=document.getElementById('ls').value;
+  const lh=document.getElementById('lh').value;
+  const rot=document.getElementById('rot').value;
+  const tc=document.getElementById('tcp').value;
+  const bg=document.getElementById('bgp').value;
+  const bc=document.getElementById('bcp').value;
+  const bw=document.getElementById('bw').value;
+  const br=document.getElementById('br').value;
+  const ts=document.getElementById('ts2').value;
+  const gl=document.getElementById('gl').value;
+  const padPct=+document.getElementById('padp').value;
+  document.getElementById('sts').textContent=fs+'px';
+  document.getElementById('stc').textContent=text.length+' حرف';
+  const padV=Math.max(10,Math.round(fs*padPct/100));
+  const padH2=Math.round(padV*1.4);
+  const bord=S.bs==='none'?'none':`${bw}px ${S.bs} ${bc}`;
+  if(!S.font){
+    box.style.cssText=`background:${bg};border-radius:${br}px;border:${bord};padding:${padV}px ${padH2}px;display:inline-block`;
+    box.innerHTML='<div class="empty"><div class="ei">🔤</div><p>اختر خطاً</p></div>';
+    return;
+  }
+  const ff=S.font.fontFamily;
+  let tDeco=[S.underline?'underline':'',S.strike?'line-through':''].filter(Boolean).join(' ')||'none';
+  let shadow='none';
+  if(+ts>0) shadow=`2px 2px ${ts}px rgba(0,0,0,.65)`;
+  if(+gl>0){const {r,g,b}=hrgb(tc);shadow=`0 0 ${gl}px rgba(${r},${g},${b},.9),0 0 ${+gl*2}px rgba(${r},${g},${b},.4)`;}
+  if(S.fx.neon){const {r,g,b}=hrgb(tc);shadow=`0 0 5px ${tc},0 0 12px ${tc},0 0 25px rgba(${r},${g},${b},.7)`;}
+  let filter=''; if(S.fx.blur) filter='blur(2px)';
+  let txtStyle=`color:${tc}`;
+  if(S.fx.gradient) txtStyle='background:linear-gradient(135deg,#4e00f4,#6bfffd,#a600fe);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text';
+  if(S.fx.outline) txtStyle=`-webkit-text-stroke:2px ${tc};color:transparent`;
+  box.style.cssText=`background:${bg};border:${bord};border-radius:${br}px;padding:${padV}px ${padH2}px;text-align:${S.align};filter:${filter||'none'};display:inline-block;max-width:92%`;
+  box.innerHTML=`<div id="ptxt" style="font-family:'${ff}',system-ui,sans-serif;font-size:${fs}px;font-weight:${fw};font-style:${S.italic?'italic':'normal'};text-decoration:${tDeco};letter-spacing:${ls}px;line-height:${lh};transform:rotate(${rot}deg);text-shadow:${shadow};${txtStyle};direction:auto;display:block;">${esc(text)}</div>`;
+}
+
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function hrgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)}}
+
+// ══ CONTROLS ══
+function tog(k){S[k]=!S[k];const m={italic:'ib',underline:'ub',strike:'sb2'};document.getElementById(m[k]).classList.toggle('on',S[k]);updatePreview()}
+function setA(a){S.align=a;document.querySelectorAll('.ab').forEach(b=>b.classList.toggle('on',b.dataset.a===a));updatePreview()}
+function setBS(bs){S.bs=bs;document.querySelectorAll('.bsb[data-bs]').forEach(b=>b.classList.toggle('on',b.dataset.bs===bs));updatePreview()}
+function tFX(k){S.fx[k]=!S.fx[k];document.getElementById(k+'Btn').classList.toggle('on',S.fx[k]);updatePreview()}
+function sc(k,v){const m={tc:'tch',bg:'bgh',bc:'bch'};document.getElementById(m[k]).value=v;updatePreview()}
+function sh(k,v){if(/^#[0-9a-fA-F]{6}$/.test(v)){const m={tc:'tcp',bg:'bgp',bc:'bcp'};document.getElementById(m[k]).value=v;updatePreview()}}
+function aT(tc,bg,bc){['tcp','tch'].forEach(id=>document.getElementById(id).value=tc);['bgp','bgh'].forEach(id=>document.getElementById(id).value=bg);['bcp','bch'].forEach(id=>document.getElementById(id).value=bc);updatePreview()}
+
+// ══ EXPORT ══
+function toggleEM(){document.getElementById('em').classList.toggle('open')}
+document.addEventListener('click',e=>{if(!document.getElementById('ew').contains(e.target))document.getElementById('em').classList.remove('open')});
+
+async function exportAs(fmt){
+  document.getElementById('em').classList.remove('open');
+  const box=document.getElementById('pbox');
+  const ptxt=document.getElementById('ptxt');
+  if(!ptxt){showToast('اختر خطاً أولاً','err');return;}
+  const tc=document.getElementById('tcp').value,bg=document.getElementById('bgp').value,bc=document.getElementById('bcp').value;
+  const bw=+document.getElementById('bw').value,br=+document.getElementById('br').value,bs=S.bs;
+  const text=document.getElementById('ptxt-in').value;
+  const fs=+document.getElementById('fs').value,fw=document.getElementById('fw').value;
+  const ls=+document.getElementById('ls').value,lh=+document.getElementById('lh').value;
+  const ff=S.font?.fontFamily||'sans-serif',fname=S.fontName||'preview';
+  const padPct=+document.getElementById('padp').value;
+  const padV=Math.max(10,Math.round(fs*padPct/100));
+  const padH2=Math.round(padV*1.4);
+
+  if(fmt==='svg'){
+    const b64=S.font?.base64||null;
+    const ext=(S.font?.filename||'').split('.').pop().toLowerCase();
+    const mime={ttf:'font/ttf',otf:'font/otf',woff:'font/woff',woff2:'font/woff2'}[ext]||'font/ttf';
+    const fmt2={ttf:'truetype',otf:'opentype',woff:'woff',woff2:'woff2'}[ext]||'truetype';
+    const realFF=S.font?.name||'EmbeddedFont';
+    const w=box.offsetWidth,h=box.offsetHeight;
+    const lines=text.split('\n');
+    const lhPx=fs*lh;
+    const totalH=lines.length*lhPx;
+    const startY=(h-totalH)/2+fs*0.78;
+    const fontFace=b64?`<defs><style>@font-face{font-family:'${realFF}';src:url('data:${mime};base64,${b64}') format('${fmt2}')}</style></defs>`:'';
+    const bord=bs!=='none'?`stroke="${bc}" stroke-width="${bw}"`:'';
+    const nodes=lines.map((l,i)=>`  <text x="${w/2}" y="${startY+i*lhPx}" font-family="${b64?realFF:ff}" font-size="${fs}" font-weight="${fw}" font-style="${S.italic?'italic':'normal'}" letter-spacing="${ls}" fill="${tc}" text-anchor="middle" dominant-baseline="auto">${l.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</text>`).join('\n');
+    const svg=`<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">\n${fontFace}\n<rect width="${w}" height="${h}" rx="${br}" fill="${bg}" ${bord}/>\n${nodes}\n</svg>`;
+    dlBlob(svg,fname+'.svg','image/svg+xml');
+    showToast('✅ SVG مع الخط المضمّن','ok');return;
+  }
+
+  const scale=3;
+  const w=box.offsetWidth,h=box.offsetHeight;
+  const canvas=document.createElement('canvas');
+  canvas.width=w*scale;canvas.height=h*scale;
+  const ctx=canvas.getContext('2d');
+  ctx.scale(scale,scale);
+  if(fmt==='jpg'){ctx.fillStyle=bg;ctx.fillRect(0,0,w,h);}
+  ctx.fillStyle=bg;rrect(ctx,0,0,w,h,br);ctx.fill();
+  if(bs!=='none'&&bw>0){ctx.strokeStyle=bc;ctx.lineWidth=bw;rrect(ctx,0,0,w,h,br);ctx.stroke();}
+  ctx.font=`${S.italic?'italic':''} ${fw} ${fs}px '${ff}',system-ui,sans-serif`;
+  ctx.fillStyle=tc;
+  ctx.textBaseline='alphabetic';
+  const lines=text.split('\n');
+  const lhPx=fs*lh;
+  const totalH=lines.length*lhPx;
+  let y=(h-totalH)/2+fs*0.75;
+  const tx2=S.align==='center'?w/2:S.align==='right'?w-padH2:padH2;
+  ctx.textAlign=S.align==='center'?'center':S.align==='right'?'right':'left';
+  ctx.direction='rtl';
+  lines.forEach(l=>{ctx.fillText(l,tx2,y);y+=lhPx;});
+  const mime2=fmt==='jpg'?'image/jpeg':'image/png';
+  canvas.toBlob(blob=>{dlBlob(blob,fname+'.'+fmt,mime2);showToast('✅ '+fmt.toUpperCase(),'ok');},mime2,0.96);
+}
+
+function rrect(ctx,x,y,w,h,r){
+  if(r<=0){ctx.rect(x,y,w,h);return;}
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function dlBlob(data,name,mime){const b=data instanceof Blob?data:new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();}
+function copyCSS(){if(!S.font){showToast('اختر خطاً','err');return;}const css=`@font-face{font-family:'${S.fontName}';src:url('${S.font.filename}');}.text{font-family:'${S.fontName}',sans-serif;font-size:${document.getElementById('fs').value}px;font-weight:${document.getElementById('fw').value};}`;navigator.clipboard.writeText(css).then(()=>showToast('نسخ CSS ✓','ok'));}
+function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.classList.remove('show'),3000);}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'){e.preventDefault();exportAs('png');}});
+
+init();
+</script>
+</body></html>

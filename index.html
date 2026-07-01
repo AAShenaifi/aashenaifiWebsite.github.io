@@ -759,9 +759,15 @@ const $$ = s => document.querySelectorAll(s);
 function L(k){ return T[lang][k] ?? T.en[k] ?? k; }
 
 /* Escape any content.json-sourced text before it enters innerHTML, and
-   allow only http(s) URLs in hrefs (blocks javascript:/data: injection). */
+   allow only http(s) URLs or same-site relative paths in hrefs (blocks
+   javascript:/data:/protocol-relative injection). */
 const esc = s => String(s??"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const safeUrl = u => /^https?:\/\//i.test(u||"") ? u : "#";
+const safeUrl = u => {
+  u = String(u??"");
+  if(/^https?:\/\//i.test(u)) return u;
+  if(!u.startsWith("//") && !/:/.test(u)) return u;
+  return "#";
+};
 
 const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>';
 
@@ -781,7 +787,6 @@ function renderSkills(){
 }
 const slugify = s => String(s||"").toLowerCase().trim().replace(/[^\w\s-]/g,"").replace(/[\s_]+/g,"-").replace(/^-+|-+$/g,"");
 const projectSlug = p => slugify(p.titleEn);
-const toolSlug = t => slugify(t.titleEn);
 
 function renderProjects(){
   $("#projGrid").innerHTML = PROJECTS.filter(p=>p.visible!==false).map((p,i)=>{
@@ -808,21 +813,10 @@ function openProjectDetail(i,push){
   $("#projModal").classList.add("open");
   if(push) history.pushState(null,"",window.APP_BASE+"/projects/"+projectSlug(p));
 }
-function openToolDetail(i,push){
-  const t=TOOLS.filter(t=>t.visible!==false)[i];
-  if(!t) return;
-  const title=esc(lang==="ar"?t.titleAr:t.titleEn), desc=esc(lang==="ar"?t.descAr:t.descEn);
-  const tags=(t.tags||[]).map(x=>`<span class="tag">${esc(x)}</span>`).join("");
-  const embed=t.url?`<div class="proj-embed"><iframe src="${safeUrl(t.url)}" loading="lazy"></iframe></div>`:"";
-  const open=t.url?`<a class="icbtn" href="${safeUrl(t.url)}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a>`:"";
-  $("#projModalBody").innerHTML=`<h3>${title}</h3>${embed}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${open}</div>`;
-  $("#projModal").classList.add("open");
-  if(push) history.pushState(null,"",window.APP_BASE+"/tools/"+toolSlug(t));
-}
 function closeDetailModal(push){
   $("#projModal").classList.remove("open");
   $("#projModalBody").innerHTML="";
-  if(push!==false && /^\/(projects|tools)\//i.test(currentPath())) history.pushState(null,"",window.APP_BASE+"/");
+  if(push!==false && /^\/projects\//i.test(currentPath())) history.pushState(null,"",window.APP_BASE+"/");
 }
 $("#projModalClose").onclick=()=>closeDetailModal(true);
 $("#projModal").onclick=e=>{ if(e.target.id==="projModal") closeDetailModal(true); };
@@ -836,16 +830,10 @@ function currentPath(){
 function route(){
   const path=currentPath();
   const mProj=path.match(/^\/projects\/([^/]+)$/i);
-  const mTool=path.match(/^\/tools\/([^/]+)$/i);
   if(mProj){
     const list=PROJECTS.filter(p=>p.visible!==false);
     const idx=list.findIndex(p=>projectSlug(p)===mProj[1]);
     if(idx>=0){ openProjectDetail(idx,false); return; }
-  }
-  if(mTool){
-    const list=TOOLS.filter(t=>t.visible!==false);
-    const idx=list.findIndex(t=>toolSlug(t)===mTool[1]);
-    if(idx>=0){ openToolDetail(idx,false); return; }
   }
   closeDetailModal(false);
 }
@@ -858,9 +846,9 @@ function renderTools(){
     const badge=t.badge==="wip"?`<span class="badge wip">IN&nbsp;TESTING</span>`:`<span class="badge demo">DEMO</span>`;
     return `<div class="card clickable" data-tool-idx="${i}"><div class="corner"></div><div class="pnum">T${String(i+1).padStart(2,"0")}</div>${badge}
       <h3>${title}</h3><p style="margin-top:8px">${desc}</p><div class="tags">${tags}</div>
-      <div class="links"><a class="icbtn" href="${safeUrl(t.url)}" target="_blank" rel="noopener" title="${L('visit')}" onclick="event.stopPropagation()">${arrowSvg}</a></div></div>`;
+      <div class="links"><a class="icbtn" href="${safeUrl(t.url)}" title="${L('visit')}" onclick="event.stopPropagation()">${arrowSvg}</a></div></div>`;
   }).join("");
-  $$("#toolsGrid .card[data-tool-idx]").forEach(c=>c.onclick=()=>openToolDetail(+c.dataset.toolIdx,true));
+  $$("#toolsGrid .card[data-tool-idx]").forEach((c,i)=>c.onclick=()=>{ location.href=safeUrl(TOOLS.filter(t=>t.visible!==false)[i].url); });
 }
 function renderSocials(){
   $("#socials").innerHTML = SOCIALS.filter(s=>s.visible!==false).map(s=>{

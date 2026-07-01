@@ -180,7 +180,7 @@
       "titleAr": "محاكي شاشات LCD",
       "descEn": "Simulate character-LCD output and generate the matching microcontroller code.",
       "descAr": "محاكاة شاشات LCD النصية وتوليد كود المتحكم المطابق.",
-      "url": "https://lcd-simulatorcode.netlify.app/",
+      "url": "tools/lcd-simulator/",
       "tags": [
         "Embedded",
         "Codegen"
@@ -192,7 +192,7 @@
       "titleAr": "كروما — محوّل الألوان",
       "descEn": "Convert and explore colors across HEX, RGB, HSL and more, with handy palettes.",
       "descAr": "تحويل واستكشاف الألوان بين HEX و RGB و HSL والمزيد مع لوحات جاهزة.",
-      "url": "https://chroma-color-converter.netlify.app",
+      "url": "tools/chroma-color-converter/",
       "tags": [
         "Design",
         "Utility"
@@ -204,7 +204,7 @@
       "titleAr": "محوّل HTML إلى PDF",
       "descEn": "Turn HTML content into clean, downloadable PDF documents in the browser.",
       "descAr": "تحويل محتوى HTML إلى ملفات PDF نظيفة قابلة للتحميل من المتصفح.",
-      "url": "https://htmltopdfconv.netlify.app/",
+      "url": "tools/html-pdf-converter/",
       "tags": [
         "Document",
         "Export"
@@ -216,7 +216,7 @@
       "titleAr": "استوديو معاينة الخطوط",
       "descEn": "Preview, compare and audition typefaces with live custom text and styling.",
       "descAr": "معاينة ومقارنة الخطوط مع نص مخصص حي وتنسيقات مباشرة.",
-      "url": "https://font-preview-studio.netlify.app/",
+      "url": "tools/font-preview-studio/",
       "tags": [
         "Typography",
         "Design"
