@@ -5,10 +5,16 @@
 <title>Redirecting…</title>
 <script>
   // GitHub Pages has no server-side routing, so deep links like /projects/foo
-  // 404 here. Stash the intended path and bounce to index.html, which restores
-  // it via history.replaceState and renders the matching view.
-  sessionStorage.setItem("redirectPath", location.pathname + location.search + location.hash);
-  location.replace("/");
+  // (or, under a project-site prefix, /repo-name/projects/foo) 404 here.
+  // Detect the site's base path from the /projects/ or /tools/ marker, stash
+  // the path below it, and bounce to that base — index.html restores the
+  // full path via history.replaceState and renders the matching view.
+  var loc = window.location;
+  var full = loc.pathname + loc.search + loc.hash;
+  var m = loc.pathname.match(/^(.*?)\/(projects|tools)\/[^/]+\/?$/i);
+  var base = m ? m[1] : "";
+  sessionStorage.setItem("redirectPath", m ? full.slice(base.length) : full);
+  location.replace(base + "/");
 </script>
 </head>
 <body></body>

@@ -358,12 +358,17 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t-4)}
 </head>
 <body class="locked">
 <script>
-  // Restore the real deep-link path stashed by 404.html before the router runs.
+  // Detect this deployment's base path (e.g. "" at a domain root, or
+  // "/aashenaifiWebsite.github.io" when served under a GitHub project-site
+  // prefix), then restore the real deep-link path stashed by 404.html
+  // before the router runs.
   (function(){
+    window.APP_BASE = location.pathname.replace(/\/index\.html$/i,"").replace(/\/+$/,"");
     var p = sessionStorage.getItem("redirectPath");
     if(p){
       sessionStorage.removeItem("redirectPath");
-      if(p !== location.pathname + location.search + location.hash) history.replaceState(null, "", p);
+      var target = window.APP_BASE + p;
+      if(target !== location.pathname + location.search + location.hash) history.replaceState(null, "", target);
     }
   })();
 </script>
@@ -801,7 +806,7 @@ function openProjectDetail(i,push){
   $("#projModalBody").innerHTML=`<h3>${title}</h3><div class="date">${esc(p.date)}</div>${gallery}${embed}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${link}${drive}</div>`;
   $("#projModalBody").querySelectorAll(".proj-modal-gallery img").forEach(img=>img.onclick=()=>window.open(img.src,"_blank","noopener"));
   $("#projModal").classList.add("open");
-  if(push) history.pushState(null,"","/projects/"+projectSlug(p));
+  if(push) history.pushState(null,"",window.APP_BASE+"/projects/"+projectSlug(p));
 }
 function openToolDetail(i,push){
   const t=TOOLS.filter(t=>t.visible!==false)[i];
@@ -812,18 +817,22 @@ function openToolDetail(i,push){
   const open=t.url?`<a class="icbtn" href="${safeUrl(t.url)}" target="_blank" rel="noopener" title="${L('visit')}">${arrowSvg}</a>`:"";
   $("#projModalBody").innerHTML=`<h3>${title}</h3>${embed}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${open}</div>`;
   $("#projModal").classList.add("open");
-  if(push) history.pushState(null,"","/tools/"+toolSlug(t));
+  if(push) history.pushState(null,"",window.APP_BASE+"/tools/"+toolSlug(t));
 }
 function closeDetailModal(push){
   $("#projModal").classList.remove("open");
   $("#projModalBody").innerHTML="";
-  if(push!==false && /^\/(projects|tools)\//i.test(currentPath())) history.pushState(null,"","/");
+  if(push!==false && /^\/(projects|tools)\//i.test(currentPath())) history.pushState(null,"",window.APP_BASE+"/");
 }
 $("#projModalClose").onclick=()=>closeDetailModal(true);
 $("#projModal").onclick=e=>{ if(e.target.id==="projModal") closeDetailModal(true); };
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && $("#projModal").classList.contains("open")) closeDetailModal(true); });
 
-function currentPath(){ return (location.pathname.replace(/\/index\.html$/i,"").replace(/\/+$/,"")) || "/"; }
+function currentPath(){
+  var raw = location.pathname.replace(/\/index\.html$/i,"");
+  if(window.APP_BASE && raw.indexOf(window.APP_BASE)===0) raw = raw.slice(window.APP_BASE.length);
+  return raw.replace(/\/+$/,"") || "/";
+}
 function route(){
   const path=currentPath();
   const mProj=path.match(/^\/projects\/([^/]+)$/i);
