@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Abdullah Alshenaifi — Electronics Engineer. Embedded systems, IoT, PCB design, robotics, and 3D printing." />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self'; connect-src 'self' https://formspree.io; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; frame-src 'self'; connect-src 'self' https://formspree.io https://aashenaifi.netlify.app; worker-src 'self' blob:; object-src 'none'; base-uri 'self'" />
 <title>Abdullah Alshenaifi — Electronics Engineer</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' fill='%2380519F'>A</text></svg>" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -955,6 +955,7 @@ const BOOT_LINES=[
 let booted=false;
 function startBoot(){
   if(booted) return; booted=true;
+  fetch("https://aashenaifi.netlify.app/api/track-visit",{method:"POST",mode:"no-cors",keepalive:true}).catch(()=>{});
   $("#bootIdle").style.display="none"; $("#skipBtn").style.display="none";
   const bl=$("#bootlog"); bl.style.display="flex";
   // play the circuit-trace logo animation (cache-bust restarts the SVG's CSS animation)
