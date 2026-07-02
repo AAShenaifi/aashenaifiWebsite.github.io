@@ -158,7 +158,12 @@
         "Embedded"
       ],
       "url": null,
-      "images": [],
+      "images": [
+        "images/smart-water-metering/schematic.jpg",
+        "images/smart-water-metering/wiring-diagram.png",
+        "images/smart-water-metering/app-dashboard.jpg",
+        "images/smart-water-metering/web-dashboard.png"
+      ],
       "driveUrl": null,
       "embed3d": "models/smart-water-metering.glb",
       "reportPdf": "docs/smart-water-metering/report.pdf",

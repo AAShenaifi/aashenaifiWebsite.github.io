@@ -828,8 +828,8 @@ function openProjectDetail(i,push){
   if(!p) return;
   const title=esc(lang==="ar"?p.titleAr:p.titleEn), desc=esc(lang==="ar"?p.descAr:p.descEn);
   const tags=(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-  const imgs=(p.images||[]).filter(u=>/^https?:\/\//i.test(u||""));
-  const gallery=imgs.length?`<div class="proj-modal-gallery">${imgs.map(u=>`<img src="${esc(u)}" alt="${title}" loading="lazy">`).join("")}</div>`:"";
+  const imgs=(p.images||[]).filter(u=>u&&safeUrl(u)!=="#");
+  const gallery=imgs.length?`<div class="proj-modal-gallery">${imgs.map(u=>`<img src="${esc(/^https?:\/\//i.test(u)?u:localAsset(u))}" alt="${title}" loading="lazy">`).join("")}</div>`:"";
   const is3dModel=/\.(glb|gltf)$/i.test(p.embed3d||"");
   const embed=p.embed3d?(is3dModel
     ?`<div class="proj-embed"><model-viewer src="${esc(localAsset(p.embed3d))}" alt="${title} — 3D model" camera-controls touch-action="pan-y" auto-rotate exposure="1.1" shadow-intensity="0.7" style="width:100%;height:420px;--poster-color:transparent"></model-viewer></div>`
