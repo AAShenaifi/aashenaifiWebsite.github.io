@@ -68,8 +68,13 @@ img{display:block}
 .bg-fixed{position:fixed;inset:0;z-index:0;pointer-events:none}
 .dotgrid{
   position:absolute;inset:0;opacity:.5;
-  background-image:radial-gradient(circle at 1px 1px,rgba(128,81,159,.14) 1px,transparent 0);
-  background-size:30px 30px;
+  background:rgba(128,81,159,.16);
+  -webkit-mask-image:url("pcb-trace-pattern.svg");
+  mask-image:url("pcb-trace-pattern.svg");
+  -webkit-mask-repeat:repeat;
+  mask-repeat:repeat;
+  -webkit-mask-size:460px auto;
+  mask-size:460px auto;
 }
 .measgrid{
   position:absolute;inset:0;
@@ -302,6 +307,7 @@ model-viewer:active{cursor:grabbing}
 .proj-code-bar a:hover{opacity:.75}
 .proj-code pre{margin:0;padding:16px;max-height:360px;overflow:auto}
 .proj-code code{font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.7;color:var(--t-2);white-space:pre}
+.proj-code.hidden{display:none}
 
 /* ───────────────── FORM ───────────────── */
 form{display:flex;flex-direction:column;gap:18px}
@@ -831,16 +837,25 @@ function openProjectDetail(i,push){
   ):"";
   const video=p.presentationVideo?`<div class="proj-embed"><video controls preload="metadata" style="width:100%;height:420px;display:block;background:#000" src="${esc(localAsset(p.presentationVideo))}"></video></div>`:"";
   const codeName=p.codeFile?p.codeFile.split("/").pop():"";
-  const code=p.codeFile?`<div class="proj-code"><div class="proj-code-bar"><span>${esc(codeName)}</span><a href="${esc(localAsset(p.codeFile))}" download>⬇ Download</a></div><pre><code id="projCodeBody">Loading code…</code></pre></div>`:"";
+  const codeBtn=p.codeFile?`<button class="btn" id="projCodeToggle" type="button">💻 Code</button>`:"";
+  const code=p.codeFile?`<div class="proj-code hidden" id="projCodePanel"><div class="proj-code-bar"><span>${esc(codeName)}</span><a href="${esc(localAsset(p.codeFile))}" download>⬇ Download</a></div><pre><code id="projCodeBody">Loading code…</code></pre></div>`:"";
   const link=p.url?`<a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a>`:"";
   const drive=p.driveUrl?`<a class="btn" href="${safeUrl(p.driveUrl)}" target="_blank" rel="noopener">📁 Files (code / pics / videos)</a>`:"";
   const report=p.reportPdf?`<a class="btn" href="${esc(localAsset(p.reportPdf))}" target="_blank" rel="noopener">📄 Report (PDF)</a>`:"";
-  $("#projModalBody").innerHTML=`<h3>${title}</h3><div class="date">${esc(p.date)}</div>${gallery}${embed}${video}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${link}${drive}${report}</div>${code}`;
+  $("#projModalBody").innerHTML=`<h3>${title}</h3><div class="date">${esc(p.date)}</div>${gallery}${embed}${video}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${link}${drive}${report}${codeBtn}</div>${code}`;
   $("#projModalBody").querySelectorAll(".proj-modal-gallery img").forEach(img=>img.onclick=()=>window.open(img.src,"_blank","noopener"));
   if(p.codeFile){
-    fetch(localAsset(p.codeFile)).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); })
-      .then(txt=>{ const el=$("#projCodeBody"); if(el) el.textContent=txt; })
-      .catch(()=>{ const el=$("#projCodeBody"); if(el) el.textContent="Couldn't load the code file."; });
+    let codeLoaded=false;
+    $("#projCodeToggle").onclick=()=>{
+      const panel=$("#projCodePanel");
+      panel.classList.toggle("hidden");
+      if(!codeLoaded && !panel.classList.contains("hidden")){
+        codeLoaded=true;
+        fetch(localAsset(p.codeFile)).then(r=>{ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); })
+          .then(txt=>{ const el=$("#projCodeBody"); if(el) el.textContent=txt; })
+          .catch(()=>{ const el=$("#projCodeBody"); if(el) el.textContent="Couldn't load the code file."; codeLoaded=false; });
+      }
+    };
   }
   $("#projModal").classList.add("open");
   if(push) history.pushState(null,"",window.APP_BASE+"/projects/"+projectSlug(p));
