@@ -120,7 +120,9 @@
       "url": null,
       "images": [],
       "driveUrl": null,
-      "embed3d": null
+      "embed3d": null,
+      "reportPdf": null,
+      "presentationVideo": null
     },
     {
       "titleEn": "Smart Safety Helmet",
@@ -137,7 +139,9 @@
       "url": null,
       "images": [],
       "driveUrl": null,
-      "embed3d": null
+      "embed3d": null,
+      "reportPdf": null,
+      "presentationVideo": null
     },
     {
       "titleEn": "IoT Water Monitoring — Graduation Project",
@@ -154,7 +158,9 @@
       "url": null,
       "images": [],
       "driveUrl": "https://drive.google.com/drive/u/2/folders/1BZheJYO5aCFIzq_nSOk5SWQ-Hfazzow-",
-      "embed3d": "models/smart-water-metering.glb"
+      "embed3d": "models/smart-water-metering.glb",
+      "reportPdf": "docs/smart-water-metering/report.pdf",
+      "presentationVideo": "docs/smart-water-metering/presentation.mp4"
     },
     {
       "titleEn": "Custom Robotics Mainboard PCB",
@@ -171,7 +177,9 @@
       "url": "https://github.com/AAShenaifi/Robots_MainboardPCB",
       "images": [],
       "driveUrl": null,
-      "embed3d": null
+      "embed3d": null,
+      "reportPdf": null,
+      "presentationVideo": null
     }
   ],
   "tools": [
