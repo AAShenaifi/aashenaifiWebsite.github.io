@@ -805,7 +805,11 @@ function openProjectDetail(i,push){
   const tags=(p.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
   const imgs=(p.images||[]).filter(u=>/^https?:\/\//i.test(u||""));
   const gallery=imgs.length?`<div class="proj-modal-gallery">${imgs.map(u=>`<img src="${esc(u)}" alt="${title}" loading="lazy">`).join("")}</div>`:"";
-  const embed=p.embed3d?`<div class="proj-embed"><iframe src="${esc(p.embed3d)}" loading="lazy" allowfullscreen></iframe></div>`:"";
+  const is3dModel=/\.(glb|gltf)$/i.test(p.embed3d||"");
+  const embed=p.embed3d?(is3dModel
+    ?`<div class="proj-embed"><model-viewer src="${safeUrl(p.embed3d)}" alt="${title} — 3D model" camera-controls touch-action="pan-y" auto-rotate exposure="1.1" shadow-intensity="0.7" style="width:100%;height:420px;--poster-color:transparent"></model-viewer></div>`
+    :`<div class="proj-embed"><iframe src="${esc(p.embed3d)}" loading="lazy" allowfullscreen></iframe></div>`
+  ):"";
   const link=p.url?`<a class="icbtn" href="${safeUrl(p.url)}" target="_blank" rel="noopener" title="${L('open')}">${arrowSvg}</a>`:"";
   const drive=p.driveUrl?`<a class="btn" href="${safeUrl(p.driveUrl)}" target="_blank" rel="noopener">📁 Files (code / pics / videos)</a>`:"";
   $("#projModalBody").innerHTML=`<h3>${title}</h3><div class="date">${esc(p.date)}</div>${gallery}${embed}<p>${desc}</p><div class="tags">${tags}</div><div class="links">${link}${drive}</div>`;
